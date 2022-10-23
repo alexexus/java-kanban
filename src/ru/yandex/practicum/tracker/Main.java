@@ -17,13 +17,13 @@ public class Main {
         task1.setName("Task #1");
         task1.setDescription("Description task #1");
         task1.setStatus(TaskStatus.NEW);
-        task1.setId(tasksManager.getGeneratorId());
+        task1.setId(tasksManager.generateId());
 
         Task task2 = new Task();
         task2.setName("Task #2");
         task2.setDescription("Description task #2");
         task2.setStatus(TaskStatus.NEW);
-        task2.setId(tasksManager.getGeneratorId());
+        task2.setId(tasksManager.generateId());
 
         tasksManager.createTask(task1);
         tasksManager.createTask(task2);
@@ -32,7 +32,7 @@ public class Main {
         epic1.setName("Epic #1");
         epic1.setDescription("Description epic #1");
         epic1.setStatus(TaskStatus.NEW);
-        epic1.setId(tasksManager.getGeneratorId());
+        epic1.setId(tasksManager.generateId());
         epic1.setSubTaskIds(new ArrayList<>());
 
         tasksManager.createEpic(epic1);
@@ -41,7 +41,7 @@ public class Main {
         subtask1.setName("Subtask #1 in epic #1");
         subtask1.setDescription("Description subtask #1 in epic #1");
         subtask1.setStatus(TaskStatus.NEW);
-        subtask1.setId(tasksManager.getGeneratorId());
+        subtask1.setId(tasksManager.generateId());
         subtask1.setEpicId(3);
 
         tasksManager.createSubtask(subtask1);
@@ -50,7 +50,7 @@ public class Main {
         subtask2.setName("Subtask #2 in epic #1");
         subtask2.setDescription("Description subtask #2 in epic #1");
         subtask2.setStatus(TaskStatus.NEW);
-        subtask2.setId(tasksManager.getGeneratorId());
+        subtask2.setId(tasksManager.generateId());
         subtask2.setEpicId(3);
 
         tasksManager.createSubtask(subtask2);
@@ -59,7 +59,7 @@ public class Main {
         epic2.setName("Epic #2");
         epic2.setDescription("Description epic #2");
         epic2.setStatus(TaskStatus.NEW);
-        epic2.setId(tasksManager.getGeneratorId());
+        epic2.setId(tasksManager.generateId());
         epic2.setSubTaskIds(new ArrayList<>());
 
         tasksManager.createEpic(epic2);
@@ -68,7 +68,7 @@ public class Main {
         subtask3.setName("Subtask #1 in epic #2");
         subtask3.setDescription("Description subtask #1 in epic #2");
         subtask3.setStatus(TaskStatus.NEW);
-        subtask3.setId(tasksManager.getGeneratorId());
+        subtask3.setId(tasksManager.generateId());
         subtask3.setEpicId(6);
 
         tasksManager.createSubtask(subtask3);
@@ -145,7 +145,7 @@ public class Main {
         Subtask subtask5 = new Subtask();
         subtask5.setName("Subtask #2 in epic #1 (update)");
         subtask5.setDescription("Description subtask #2 in epic #1 (update)");
-        subtask5.setStatus(TaskStatus.IN_PROGRESS);
+        subtask5.setStatus(TaskStatus.DONE);
         subtask5.setId(5);
         subtask5.setEpicId(3);
 
@@ -158,8 +158,16 @@ public class Main {
 
         System.out.println();
 
+        for (Epic epic : tasksManager.getEpics()) {
+            System.out.println("Name: " + epic.getName() + " " + "Description: " + epic.getDescription()
+                    + " " + "Status: " + epic.getStatus() + " " + "Id: " + epic.getId() + " " + "Subtasks ids: " + epic.getSubTaskIds());
+        }
+
+        System.out.println();
+
         tasksManager.removeTaskById(2);
         tasksManager.removeEpicById(3);
+        tasksManager.removeSubtaskById(7);
 
         for (Epic epic : tasksManager.getEpics()) {
             System.out.println("Name: " + epic.getName() + " " + "Description: " + epic.getDescription()
@@ -172,5 +180,13 @@ public class Main {
             System.out.println("Name: " + task.getName() + " " + "Description: " + task.getDescription()
                     + " " + "Status: " + task.getStatus() + " " + "Id: " + task.getId());
         }
+
+        System.out.println();
+
+        for (Subtask subtask : tasksManager.getSubtasks()) {
+            System.out.println("Name: " + subtask.getName() + " " + "Description: " + subtask.getDescription()
+                    + " " + "Status: " + subtask.getStatus() + " " + "Id: " + subtask.getId() + " " + "Epic id: " + subtask.getEpicId());
+        }
+
     }
 }

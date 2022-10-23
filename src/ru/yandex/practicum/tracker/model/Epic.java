@@ -1,17 +1,10 @@
 package ru.yandex.practicum.tracker.model;
 
-import ru.yandex.practicum.tracker.TaskStatus;
-
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
     private ArrayList<Integer> subTaskIds;
-
-    /*public Epic(String name, TaskStatus status, int id, String description, ArrayList<Integer> subTaskIds) {
-        super(name, status, id, description);
-        this.subTaskIds = subTaskIds;
-    }*/
 
     public ArrayList<Integer> getSubTaskIds() {
         return subTaskIds;

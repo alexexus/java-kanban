@@ -1,17 +1,10 @@
 package ru.yandex.practicum.tracker.model;
 
-import ru.yandex.practicum.tracker.TaskStatus;
-
 import java.util.Objects;
 
 public class Subtask extends Task {
 
     private int epicId;
-
-    /*public Subtask(String name, TaskStatus status, int id, String description, int epicId) {
-        super(name, status, id, description);
-        this.epicId = epicId;
-    }*/
 
     public int getEpicId() {
         return epicId;

@@ -11,13 +11,6 @@ public class Task {
     private int id;
     private String description;
 
-    /*public Task(String name, TaskStatus status, int id, String description) {
-        this.name = name;
-        this.status = status;
-        this.id = id;
-        this.description = description;
-    }*/
-
     public String getName() {
         return name;
     }
@@ -54,9 +47,6 @@ public class Task {
     public boolean equals(Object o) {
         if (this == o) {
             return true;
-        }
-        if (o == null) {
-            return false;
         }
         if (!(o instanceof Task)) {
             return false;

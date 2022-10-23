@@ -15,7 +15,7 @@ public class TasksManager {
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int generatorId = 0;
 
-    public int getGeneratorId() {
+    public int generateId() {
         return ++generatorId;
     }
 
@@ -44,6 +44,7 @@ public class TasksManager {
         subtasks.clear();
         for (Epic epic : getEpics()) {
             epic.setStatus(TaskStatus.NEW);
+            epic.getSubTaskIds().clear();
         }
     }
 
@@ -71,10 +72,10 @@ public class TasksManager {
         subtasks.put(subtask.getId(), subtask);
         epics.get(subtask.getEpicId()).getSubTaskIds().add(subtask.getId());
 
-        updateEpicStatusBySubtasks(subtask);
+        updateEpicStatus(epics.get(subtask.getEpicId()));
     }
 
-    public void updateTask(Task task) { // Так рекомендовал делать наставник
+    public void updateTask(Task task) {
         Task taskToUpdate = getTaskById(task.getId());
         taskToUpdate.setDescription(task.getDescription());
         taskToUpdate.setStatus(task.getStatus());
@@ -87,9 +88,6 @@ public class TasksManager {
         epicToUpdate.setName(epic.getName());
         epicToUpdate.setSubTaskIds(epic.getSubTaskIds());
 
-        if (epicToUpdate.getSubTaskIds().isEmpty()) {
-            epicToUpdate.setStatus(TaskStatus.NEW);
-        }
         updateEpicStatus(epicToUpdate);
     }
 
@@ -100,7 +98,7 @@ public class TasksManager {
         subtaskToUpdate.setName(subtask.getName());
         subtaskToUpdate.setEpicId(subtask.getEpicId());
 
-        updateEpicStatusBySubtasks(subtask);
+        updateEpicStatus(epics.get(subtask.getEpicId()));
     }
 
     public void removeTaskById(int taskId) {
@@ -110,33 +108,35 @@ public class TasksManager {
     public void removeEpicById(int epicId) {
         epics.remove(epicId);
         for (Subtask subtask : getSubtasks()) {
+            /* Дело в том, что getSubtasksByEpicId() возвращает новый список который создан на основе настоящего,
+             то есть он не берет из сабтасков объекты, а просто клонирует их в свой собственный список.*/
             if (subtask.getEpicId() == epicId) {
-                getTasks().remove(subtask);
+                subtasks.values().remove(subtask);
             }
         }
     }
 
-    public void removeSubtaskById(int subtaskId) {
+    public void removeSubtaskById(Integer subtaskId) {
         subtasks.remove(subtaskId);
-        getEpics().get(getSubtasks().get(subtaskId).getEpicId()).getSubTaskIds().remove(subtaskId);
-        updateEpicStatusBySubtasks(getSubtaskById(subtaskId));
+        for (Epic epic : getEpics()) {
+            epic.getSubTaskIds().removeIf(ids -> ids.equals(subtaskId));
+            updateEpicStatus(epic);
+        }
     }
 
-    public ArrayList<Subtask> getAllSubtasksInEpic(int epicId) {
-        ArrayList<Subtask> subtaskArrayList = new ArrayList<>();
+    public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
+        ArrayList<Subtask> subtasks = new ArrayList<>();
         for (Subtask subtask : getSubtasks())
             if (subtask.getEpicId() == epicId) {
-                subtaskArrayList.add(subtask);
+                subtasks.add(subtask);
             }
-        return subtaskArrayList;
-    }
-
-    private void updateEpicStatusBySubtasks(Subtask subtask) {
-        Epic epic = epics.get(subtask.getEpicId());
-        updateEpicStatus(epic);
+        return subtasks;
     }
 
     private void updateEpicStatus(Epic epic) {
+        if (epic.getSubTaskIds().isEmpty()) {
+            epic.setStatus(TaskStatus.NEW);
+        }
         for (Integer idSubtask : epic.getSubTaskIds()) {
             boolean allSubtasksStatusIsNew = getSubtaskById(idSubtask).getStatus().equals(TaskStatus.NEW);
             boolean allSubtasksStatusIsDone = getSubtaskById(idSubtask).getStatus().equals(TaskStatus.DONE);
@@ -149,5 +149,4 @@ public class TasksManager {
             }
         }
     }
-
 }

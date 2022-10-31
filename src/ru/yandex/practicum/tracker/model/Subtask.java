@@ -19,10 +19,7 @@ public class Subtask extends Task {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
+        if (!(o instanceof Subtask) || !super.equals(o)) {
             return false;
         }
         Subtask subtask = (Subtask) o;

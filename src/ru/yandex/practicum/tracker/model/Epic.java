@@ -19,10 +19,7 @@ public class Epic extends Task {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        if (!super.equals(o)) {
+        if (!(o instanceof Epic) || !super.equals(o)) {
             return false;
         }
         Epic epic = (Epic) o;

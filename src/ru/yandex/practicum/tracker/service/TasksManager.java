@@ -108,20 +108,17 @@ public class TasksManager {
     public void removeEpicById(int epicId) {
         epics.remove(epicId);
         for (Subtask subtask : getSubtasks()) {
-            /* Дело в том, что getSubtasksByEpicId() возвращает новый список который создан на основе настоящего,
-             то есть он не берет из сабтасков объекты, а просто клонирует их в свой собственный список.*/
             if (subtask.getEpicId() == epicId) {
-                subtasks.values().remove(subtask);
+                subtasks.remove(subtask.getId());
             }
         }
     }
 
     public void removeSubtaskById(Integer subtaskId) {
+        Epic epic = getEpicById(getSubtaskById(subtaskId).getEpicId());
+        epic.getSubTaskIds().remove(subtaskId);
+        updateEpicStatus(epic);
         subtasks.remove(subtaskId);
-        for (Epic epic : getEpics()) {
-            epic.getSubTaskIds().removeIf(ids -> ids.equals(subtaskId));
-            updateEpicStatus(epic);
-        }
     }
 
     public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
@@ -136,16 +133,21 @@ public class TasksManager {
     private void updateEpicStatus(Epic epic) {
         if (epic.getSubTaskIds().isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
-        }
-        for (Integer idSubtask : epic.getSubTaskIds()) {
-            boolean allSubtasksStatusIsNew = getSubtaskById(idSubtask).getStatus().equals(TaskStatus.NEW);
-            boolean allSubtasksStatusIsDone = getSubtaskById(idSubtask).getStatus().equals(TaskStatus.DONE);
-            if (allSubtasksStatusIsNew) {
-                epic.setStatus(TaskStatus.NEW);
-            } else if (allSubtasksStatusIsDone) {
-                epic.setStatus(TaskStatus.DONE);
-            } else {
-                epic.setStatus(TaskStatus.IN_PROGRESS);
+        } else {
+            boolean allSubtasksStatusIsNew = false;
+            boolean allSubtasksStatusIsDone = false;
+            for (Integer idSubtask : epic.getSubTaskIds()) {
+                if (!(getSubtasks().isEmpty())) {
+                    allSubtasksStatusIsNew = getSubtaskById(idSubtask).getStatus().equals(TaskStatus.NEW);
+                    allSubtasksStatusIsDone = getSubtaskById(idSubtask).getStatus().equals(TaskStatus.DONE);
+                }
+                if (allSubtasksStatusIsNew) {
+                    epic.setStatus(TaskStatus.NEW);
+                } else if (allSubtasksStatusIsDone) {
+                    epic.setStatus(TaskStatus.DONE);
+                } else {
+                    epic.setStatus(TaskStatus.IN_PROGRESS);
+                }
             }
         }
     }

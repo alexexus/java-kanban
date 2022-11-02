@@ -16,9 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int generatorId = 0;
 
-    private final int INITIAL_CAPACITY_OF_HISTORY = 10;
-
-    private final List<Task> history = new ArrayList<>(INITIAL_CAPACITY_OF_HISTORY);
+    HistoryManager historyManager = Managers.getDefaultHistory();
 
     @Override
     public int generateId() {
@@ -62,28 +60,19 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTaskById(int taskId) {
-        if (history.size() >= INITIAL_CAPACITY_OF_HISTORY) {
-            history.remove(0);
-        }
-        history.add(tasks.get(taskId));
+        historyManager.add(tasks.get(taskId));
         return tasks.get(taskId);
     }
 
     @Override
     public Epic getEpicById(int epicId) {
-        if (history.size() >= INITIAL_CAPACITY_OF_HISTORY) {
-            history.remove(0);
-        }
-        history.add(epics.get(epicId));
+        historyManager.add(epics.get(epicId));
         return epics.get(epicId);
     }
 
     @Override
     public Subtask getSubtaskById(int subtaskId) {
-        if (history.size() >= INITIAL_CAPACITY_OF_HISTORY) {
-            history.remove(0);
-        }
-        history.add(subtasks.get(subtaskId));
+        historyManager.add(subtasks.get(subtaskId));
         return subtasks.get(subtaskId);
     }
 
@@ -188,10 +177,5 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
         }
-    }
-
-    @Override
-    public List<Task> getHistory() {
-        return history;
     }
 }

@@ -3,7 +3,7 @@ package ru.yandex.practicum.tracker;
 import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
-import ru.yandex.practicum.tracker.service.InMemoryTaskManager;
+import ru.yandex.practicum.tracker.service.*;
 
 import java.util.ArrayList;
 
@@ -12,6 +12,7 @@ public class Main {
     public static void main(String[] args) {
 
         InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        HistoryManager historyManager = Managers.getDefaultHistory();
 
         Task task1 = new Task();
         task1.setName("Задача #1");
@@ -188,8 +189,10 @@ public class Main {
                     + " " + "Статус: " + subtask.getStatus() + " " + "ID: " + subtask.getId() + " " + "ID эпика: " + subtask.getEpicId());
         }
 
-        for (Task task : inMemoryTaskManager.getHistory()) {
-            System.out.println(task.getId());
+        System.out.println("История просмотров:");
+
+        for (Task task : historyManager.getHistory()) {
+            System.out.printf(task.getId() + " ");
         }
     }
 }

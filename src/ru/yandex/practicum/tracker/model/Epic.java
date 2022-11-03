@@ -1,24 +1,21 @@
 package ru.yandex.practicum.tracker.model;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subTaskIds;
+    private List<Integer> subTaskIds;
 
-    public ArrayList<Integer> getSubTaskIds() {
+    public List<Integer> getSubTaskIds() {
         return subTaskIds;
     }
 
-    public void setSubTaskIds(ArrayList<Integer> subTaskIds) {
+    public void setSubTaskIds(List<Integer> subTaskIds) {
         this.subTaskIds = subTaskIds;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
         if (!(o instanceof Epic) || !super.equals(o)) {
             return false;
         }

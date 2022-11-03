@@ -1,6 +1,6 @@
 package ru.yandex.practicum.tracker.service;
 
-import ru.yandex.practicum.tracker.TaskStatus;
+import ru.yandex.practicum.tracker.model.TaskStatus;
 import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
@@ -19,9 +19,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    @Override
-    public int generateId() {
-        return ++generatorId;
+    private void generateId() {
+        ++generatorId;
+    }
+
+    public int getGeneratorId() {
+        generateId();
+        return generatorId;
     }
 
     @Override
@@ -146,12 +150,13 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
+    public List<Subtask> getSubtasksByEpicId(int epicId) {
         ArrayList<Subtask> subtasks = new ArrayList<>();
-        for (Subtask subtask : getSubtasks())
+        for (Subtask subtask : getSubtasks()) {
             if (subtask.getEpicId() == epicId) {
                 subtasks.add(subtask);
             }
+        }
         return subtasks;
     }
 

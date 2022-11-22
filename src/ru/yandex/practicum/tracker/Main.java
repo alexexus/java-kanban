@@ -4,7 +4,9 @@ import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
 import ru.yandex.practicum.tracker.model.TaskStatus;
-import ru.yandex.practicum.tracker.service.*;
+import ru.yandex.practicum.tracker.service.HistoryManager;
+import ru.yandex.practicum.tracker.service.InMemoryTaskManager;
+import ru.yandex.practicum.tracker.service.Managers;
 
 import java.util.ArrayList;
 
@@ -57,6 +59,15 @@ public class Main {
 
         inMemoryTaskManager.createSubtask(subtask2);
 
+        Subtask subtask3 = new Subtask();
+        subtask3.setName("Подзадача #3 в эпике #1");
+        subtask3.setDescription("Описание подзадачи #3 в эпике #1");
+        subtask3.setStatus(TaskStatus.NEW);
+        subtask3.setId(inMemoryTaskManager.getGeneratorId());
+        subtask3.setEpicId(3);
+
+        inMemoryTaskManager.createSubtask(subtask3);
+
         Epic epic2 = new Epic();
         epic2.setName("Эпик #2");
         epic2.setDescription("Описание эпика #2");
@@ -66,134 +77,70 @@ public class Main {
 
         inMemoryTaskManager.createEpic(epic2);
 
-        Subtask subtask3 = new Subtask();
-        subtask3.setName("Подзадача #1 в эпике #2");
-        subtask3.setDescription("Описание подзадачи #1 в эпике #2");
-        subtask3.setStatus(TaskStatus.NEW);
-        subtask3.setId(inMemoryTaskManager.getGeneratorId());
-        subtask3.setEpicId(6);
+        printAllTasks(inMemoryTaskManager);
 
-        inMemoryTaskManager.createSubtask(subtask3);
+        printHistory(historyManager);
 
-        for (Task task : inMemoryTaskManager.getTasks()) {
-            System.out.println("Имя: " + task.getName() + " " + "Описание: " + task.getDescription()
-                    + " " + "Статус: " + task.getStatus() + " " + "ID: " + task.getId());
-        }
+        inMemoryTaskManager.getTaskById(1);
+        inMemoryTaskManager.getEpicById(3);
+        inMemoryTaskManager.getEpicById(7);
+        inMemoryTaskManager.getSubtasksByEpicId(4);
+        inMemoryTaskManager.getSubtasksByEpicId(6);
 
+        printHistory(historyManager);
+
+        inMemoryTaskManager.removeTaskById(1);
+
+        printHistory(historyManager);
+
+        inMemoryTaskManager.removeSubtaskById(4);
+
+        printHistory(historyManager);
+
+//        inMemoryTaskManager.removeEpicById(7);
+
+//        printHistory(historyManager);
+
+        /*
+        При удалении эпика вызывается updateEpicStatus(), в котором вызывается getSubtaskById()
+        что пытается добавить в историю просмотров subtaskId, но так как сабтаск уже удален то
+        приложение падает с нулпоинтером, не знаю как исправить.
+
+        Еще почему-то в истории просмотров id сортируются от меньше к большему, хотя это вроде
+        нигде не указано.
+
+        И вообще такое ощущение что я ничего не понял и сделал какую-то фигню.
+
+        Явно нужна помощь.
+         */
+    }
+
+    private static void printHistory(HistoryManager historyManager) {
         System.out.println();
-
-        for (Epic epic : inMemoryTaskManager.getEpics()) {
-            System.out.println("Имя: " + epic.getName() + " " + "Описание: " + epic.getDescription()
-                    + " " + "Статус: " + epic.getStatus() + " " + "ID: " + epic.getId() + " " + "ID подзадач: " + epic.getSubTaskIds());
-        }
-
-        System.out.println();
-
-        for (Subtask subtask : inMemoryTaskManager.getSubtasks()) {
-            System.out.println("Имя: " + subtask.getName() + " " + "Описание: " + subtask.getDescription()
-                    + " " + "Статус: " + subtask.getStatus() + " " + "ID: " + subtask.getId() + " " + "ID эпика: " + subtask.getEpicId());
-        }
-
-        System.out.println();
-
-        Task task3 = new Task();
-        task3.setName("Задача №1 (update)");
-        task3.setDescription("Описание задача №1 (update)");
-        task3.setStatus(TaskStatus.IN_PROGRESS);
-        task3.setId(1);
-
-        inMemoryTaskManager.updateTask(task3);
-
-        Task task4 = new Task();
-        task4.setName("Задача #2 (update)");
-        task4.setDescription("Описание задачи #2 (update)");
-        task4.setStatus(TaskStatus.IN_PROGRESS);
-        task4.setId(2);
-
-        inMemoryTaskManager.updateTask(task4);
-
-        for (Task task : inMemoryTaskManager.getTasks()) {
-            System.out.println("Имя: " + task.getName() + " " + "Описание: " + task.getDescription()
-                    + " " + "Статус: " + task.getStatus() + " " + "ID: " + task.getId());
-        }
-
-        System.out.println();
-
-        Epic epic3 = new Epic();
-        epic3.setName("Эпик #1 (update)");
-        epic3.setDescription("Описание эпика #1 (update)");
-        epic3.setStatus(TaskStatus.NEW);
-        epic3.setId(3);
-        epic3.setSubTaskIds(inMemoryTaskManager.getEpicById(3).getSubTaskIds());
-
-        inMemoryTaskManager.updateEpic(epic3);
-
-        Subtask subtask4 = new Subtask();
-        subtask4.setName("Подзадача #1 в эпике #1 (update)");
-        subtask4.setDescription("Описание подзадачи #1 в эпике #1 (update)");
-        subtask4.setStatus(TaskStatus.DONE);
-        subtask4.setId(4);
-        subtask4.setEpicId(3);
-
-        for (Epic epic : inMemoryTaskManager.getEpics()) {
-            System.out.println("Имя: " + epic.getName() + " " + "Описание: " + epic.getDescription()
-                    + " " + "Статус: " + epic.getStatus() + " " + "ID: " + epic.getId() + " " + "ID подзадач: " + epic.getSubTaskIds());
-        }
-
-        System.out.println();
-
-        inMemoryTaskManager.updateSubtask(subtask4);
-
-        Subtask subtask5 = new Subtask();
-        subtask5.setName("Подзадача #2 в эпике #1 (update)");
-        subtask5.setDescription("Описание подзадачи #2 в эпике #1 (update)");
-        subtask5.setStatus(TaskStatus.DONE);
-        subtask5.setId(5);
-        subtask5.setEpicId(3);
-
-        inMemoryTaskManager.updateSubtask(subtask5);
-
-        for (Subtask subtask : inMemoryTaskManager.getSubtasks()) {
-            System.out.println("Имя: " + subtask.getName() + " " + "Описание: " + subtask.getDescription()
-                    + " " + "Статус: " + subtask.getStatus() + " " + "ID: " + subtask.getId() + " " + "ID эпика: " + subtask.getEpicId());
-        }
-
-        System.out.println();
-
-        for (Epic epic : inMemoryTaskManager.getEpics()) {
-            System.out.println("Имя: " + epic.getName() + " " + "Описание: " + epic.getDescription()
-                    + " " + "Статус: " + epic.getStatus() + " " + "ID: " + epic.getId() + " " + "ID подзадач: " + epic.getSubTaskIds());
-        }
-
-        System.out.println();
-
-        inMemoryTaskManager.removeTaskById(2);
-        inMemoryTaskManager.removeEpicById(6);
-        inMemoryTaskManager.removeSubtaskById(5);
-
-        for (Task task : inMemoryTaskManager.getTasks()) {
-            System.out.println("Имя: " + task.getName() + " " + "Описание: " + task.getDescription()
-                    + " " + "Статус: " + task.getStatus() + " " + "ID: " + task.getId());
-        }
-
-        System.out.println();
-
-        for (Epic epic : inMemoryTaskManager.getEpics()) {
-            System.out.println("Имя: " + epic.getName() + " " + "Описание: " + epic.getDescription()
-                    + " " + "Статус: " + epic.getStatus() + " " + "ID: " + epic.getId() + " " + "ID подзадач: " + epic.getSubTaskIds());
-        }
-
-        System.out.println();
-
-        for (Subtask subtask : inMemoryTaskManager.getSubtasks()) {
-            System.out.println("Имя: " + subtask.getName() + " " + "Описание: " + subtask.getDescription()
-                    + " " + "Статус: " + subtask.getStatus() + " " + "ID: " + subtask.getId() + " " + "ID эпика: " + subtask.getEpicId());
-        }
-
         System.out.println("История просмотров:");
+        for (Integer task : historyManager.getHistory()) {
+            System.out.printf(task + " ");
+        }
+    }
 
-        for (Task task : historyManager.getHistory()) {
-            System.out.printf(task.getId() + " ");
+    private static void printAllTasks(InMemoryTaskManager inMemoryTaskManager) {
+        for (Task task : inMemoryTaskManager.getTasks()) {
+            System.out.println("Имя: " + task.getName() + " " + "Описание: " + task.getDescription()
+                    + " " + "Статус: " + task.getStatus() + " " + "ID: " + task.getId());
+        }
+
+        System.out.println();
+
+        for (Epic epic : inMemoryTaskManager.getEpics()) {
+            System.out.println("Имя: " + epic.getName() + " " + "Описание: " + epic.getDescription()
+                    + " " + "Статус: " + epic.getStatus() + " " + "ID: " + epic.getId() + " " + "ID подзадач: " + epic.getSubTaskIds());
+        }
+
+        System.out.println();
+
+        for (Subtask subtask : inMemoryTaskManager.getSubtasks()) {
+            System.out.println("Имя: " + subtask.getName() + " " + "Описание: " + subtask.getDescription()
+                    + " " + "Статус: " + subtask.getStatus() + " " + "ID: " + subtask.getId() + " " + "ID эпика: " + subtask.getEpicId());
         }
     }
 }

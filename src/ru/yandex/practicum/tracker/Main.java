@@ -84,8 +84,8 @@ public class Main {
         inMemoryTaskManager.getTaskById(1);
         inMemoryTaskManager.getEpicById(3);
         inMemoryTaskManager.getEpicById(7);
-        inMemoryTaskManager.getSubtasksByEpicId(4);
-        inMemoryTaskManager.getSubtasksByEpicId(6);
+        inMemoryTaskManager.getSubtaskById(4);
+        inMemoryTaskManager.getSubtaskById(6);
 
         printHistory(historyManager);
 
@@ -97,29 +97,16 @@ public class Main {
 
         printHistory(historyManager);
 
-//        inMemoryTaskManager.removeEpicById(7);
+        inMemoryTaskManager.removeEpicById(3);
 
-//        printHistory(historyManager);
-
-        /*
-        При удалении эпика вызывается updateEpicStatus(), в котором вызывается getSubtaskById()
-        что пытается добавить в историю просмотров subtaskId, но так как сабтаск уже удален то
-        приложение падает с нулпоинтером, не знаю как исправить.
-
-        Еще почему-то в истории просмотров id сортируются от меньше к большему, хотя это вроде
-        нигде не указано.
-
-        И вообще такое ощущение что я ничего не понял и сделал какую-то фигню.
-
-        Явно нужна помощь.
-         */
+        printHistory(historyManager);
     }
 
     private static void printHistory(HistoryManager historyManager) {
         System.out.println();
         System.out.println("История просмотров:");
-        for (Integer task : historyManager.getHistory()) {
-            System.out.printf(task + " ");
+        for (Task task : historyManager.getHistory()) {
+            System.out.printf(task.getId() + " ");
         }
     }
 

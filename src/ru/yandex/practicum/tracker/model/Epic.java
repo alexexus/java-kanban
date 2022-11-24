@@ -5,30 +5,26 @@ import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private List<Integer> subTaskIds;
+    private List<Integer> subtaskIds;
 
-    public List<Integer> getSubTaskIds() {
-        return Collections.unmodifiableList(subTaskIds);
+    public List<Integer> getSubtaskIds() {
+        return Collections.unmodifiableList(subtaskIds);
     }
 
     public void addSubtaskId(int subtaskId) {
-        subTaskIds.add(subtaskId);
+        subtaskIds.add(subtaskId);
     }
 
-    public void removeSubtaskId(int subtaskId) {
-        for (int i = 0; i < subTaskIds.size(); i++) {
-            if (subTaskIds.get(i) == subtaskId) {
-                subTaskIds.remove(i);
-            }
-        }
+    public void removeSubtaskId(Integer subtaskId) {
+        subtaskIds.remove(subtaskId);
     }
 
     public void clearSubtaskIds() {
-        subTaskIds.clear();
+        subtaskIds.clear();
     }
 
-    public void setSubTaskIds(List<Integer> subTaskIds) {
-        this.subTaskIds = subTaskIds;
+    public void setSubtaskIds(List<Integer> subtaskIds) {
+        this.subtaskIds = subtaskIds;
     }
 
     @Override
@@ -37,11 +33,11 @@ public class Epic extends Task {
             return false;
         }
         Epic epic = (Epic) o;
-        return subTaskIds.equals(epic.subTaskIds);
+        return subtaskIds.equals(epic.subtaskIds);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), subTaskIds);
+        return Objects.hash(super.hashCode(), subtaskIds);
     }
 }

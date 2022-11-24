@@ -8,8 +8,8 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private final Map<Integer, Node> nodes = new HashMap<>();
 
-    private Node first;
-    private Node last;
+    private Node head;
+    private Node tail;
 
     @Override
     public void add(Task task) {
@@ -21,49 +21,57 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void remove(int taskId) {
-        removeNode(taskId);
+        if (nodes.get(taskId) != null) {
+            removeNode(taskId);
+        }
+        /*
+        В общем оказалось что надо было просто добавить проверку на то, есть ли в
+        истории задача которую мы хотим удалить и только потом удалять её.
+         */
     }
 
     @Override
     public List<Task> getHistory() {
         List<Task> tasks = new ArrayList<>();
-        for (Node node : nodes.values()) {
-            tasks.add(node.task);
+        Node currentNode = head;
+        while (currentNode != null) {
+            tasks.add(currentNode.task);
+            currentNode = currentNode.next;
         }
         return tasks;
     }
 
     private void linkLast(Task task) {
-        final Node lastNode = last;
-        final Node newNode = new Node(task);
-        last = newNode;
-        if (lastNode == null) {
-            first = newNode;
-        } else {
+        final Node lastNode = tail;
+        final Node newNode = new Node(lastNode, task , null);
+        tail = newNode;
+        if (lastNode == null)
+            head = newNode;
+        else
             lastNode.next = newNode;
-        }
         nodes.put(task.getId(), newNode);
     }
 
     private void removeNode(int id) {
-        final Node next = nodes.get(id).next;
-        final Node prev = nodes.get(id).prev;
+        Node node = nodes.get(id);
+        final Node next = node.next;
+        final Node prev = node.prev;
 
         if (prev == null) {
-            first = next;
+            head = next;
         } else {
             prev.next = next;
-            nodes.get(id).prev = null;
+            node.prev = null;
         }
 
         if (next == null) {
-            last = prev;
+            tail = prev;
         } else {
             next.prev = prev;
-            nodes.get(id).next = null;
+            node.next = null;
         }
 
-        nodes.remove(id);
+        node.task = null;
     }
 
     private static class Node {
@@ -71,8 +79,10 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node prev;
         Node next;
 
-        Node(Task task) {
+        Node(Node prev, Task task, Node next) {
             this.task = task;
+            this.next = next;
+            this.prev = prev;
         }
     }
 }

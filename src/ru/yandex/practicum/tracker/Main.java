@@ -37,7 +37,7 @@ public class Main {
         epic1.setDescription("Описание эпика #1");
         epic1.setStatus(TaskStatus.NEW);
         epic1.setId(inMemoryTaskManager.getGeneratorId());
-        epic1.setSubTaskIds(new ArrayList<>());
+        epic1.setSubtaskIds(new ArrayList<>());
 
         inMemoryTaskManager.createEpic(epic1);
 
@@ -73,7 +73,7 @@ public class Main {
         epic2.setDescription("Описание эпика #2");
         epic2.setStatus(TaskStatus.NEW);
         epic2.setId(inMemoryTaskManager.getGeneratorId());
-        epic2.setSubTaskIds(new ArrayList<>());
+        epic2.setSubtaskIds(new ArrayList<>());
 
         inMemoryTaskManager.createEpic(epic2);
 
@@ -120,7 +120,7 @@ public class Main {
 
         for (Epic epic : inMemoryTaskManager.getEpics()) {
             System.out.println("Имя: " + epic.getName() + " " + "Описание: " + epic.getDescription()
-                    + " " + "Статус: " + epic.getStatus() + " " + "ID: " + epic.getId() + " " + "ID подзадач: " + epic.getSubTaskIds());
+                    + " " + "Статус: " + epic.getStatus() + " " + "ID: " + epic.getId() + " " + "ID подзадач: " + epic.getSubtaskIds());
         }
 
         System.out.println();

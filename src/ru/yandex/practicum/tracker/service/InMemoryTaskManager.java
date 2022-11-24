@@ -45,29 +45,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        for (int taskId : tasks.keySet()) {
-            historyManager.remove(taskId);
-        }
+        tasks.keySet().forEach(historyManager::remove);
         tasks.clear();
     }
 
     @Override
     public void deleteAllEpics() {
-        for (int epicId : epics.keySet()) {
-            historyManager.remove(epicId);
-        }
-        for (int subtaskId : subtasks.keySet()) {
-            historyManager.remove(subtaskId);
-        }
+        epics.keySet().forEach(historyManager::remove);
+        subtasks.keySet().forEach(historyManager::remove);
         epics.clear();
         subtasks.clear();
     }
 
     @Override
     public void deleteAllSubtasks() {
-        for (int subtaskId : subtasks.keySet()) {
-            historyManager.remove(subtaskId);
-        }
+        subtasks.keySet().forEach(historyManager::remove);
         subtasks.clear();
         for (Epic epic : getEpics()) {
             epic.setStatus(TaskStatus.NEW);
@@ -124,7 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epicToUpdate = epics.get(epic.getId());
         epicToUpdate.setDescription(epic.getDescription());
         epicToUpdate.setName(epic.getName());
-        epicToUpdate.setSubTaskIds(epic.getSubTaskIds());
+        epicToUpdate.setSubtaskIds(epic.getSubtaskIds());
 
         updateEpicStatus(epicToUpdate);
     }
@@ -148,51 +140,45 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeEpicById(int epicId) {
-//        for (Subtask subtask : getSubtasksByEpicId(epicId)) {  <--- Если оставить так, то приложение падает с нулпоинтром
-//            historyManager.remove(subtask.getId());            в строчке (InMemoryHistoryManager.java:49)
-//        }
-//        historyManager.remove(epicId);
-
-        epics.remove(epicId);
+        for (Subtask subtask : getSubtasksByEpicId(epicId)) {
+            historyManager.remove(subtask.getId());
+        }
         for (Subtask subtask : getSubtasksByEpicId(epicId)) {
             subtasks.remove(subtask.getId());
         }
-
-        for (Subtask subtask : getSubtasksByEpicId(epicId)) {   // <--- А если так, то не при удалении эпика не удаляет сабтаски
-            historyManager.remove(subtask.getId());
-        }
         historyManager.remove(epicId);
+        epics.remove(epicId);
     }
 
     @Override
     public void removeSubtaskById(Integer subtaskId) {
-        Epic epic = epics.get(getSubtaskById(subtaskId).getEpicId());
+        historyManager.remove(subtaskId);
+        Epic epic = epics.get(subtasks.get(subtaskId).getEpicId());
         epic.removeSubtaskId(subtaskId);
         updateEpicStatus(epic);
         subtasks.remove(subtaskId);
-        historyManager.remove(subtaskId);
     }
 
     @Override
     public List<Subtask> getSubtasksByEpicId(int epicId) {
-        ArrayList<Subtask> subtasks = new ArrayList<>();
+        ArrayList<Subtask> subtasksInEpic = new ArrayList<>();
         for (Subtask subtask : getSubtasks()) {
             if (subtask.getEpicId() == epicId) {
-                subtasks.add(subtask);
+                subtasksInEpic.add(subtask);
             }
         }
-        return subtasks;
+        return subtasksInEpic;
     }
 
     private void updateEpicStatus(Epic epic) {
-        if (epic.getSubTaskIds().isEmpty()) {
+        if (epic.getSubtaskIds().isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
             return;
         }
         boolean allSubtasksStatusIsNew = false;
         boolean allSubtasksStatusIsDone = false;
-        for (Integer idSubtask : epic.getSubTaskIds()) {
-            if (!(getSubtasks().isEmpty())) {
+        for (Integer idSubtask : epic.getSubtaskIds()) {
+            if (!(subtasks.isEmpty())) {
                 allSubtasksStatusIsNew = subtasks.get(idSubtask).getStatus().equals(TaskStatus.NEW);
                 allSubtasksStatusIsDone = subtasks.get(idSubtask).getStatus().equals(TaskStatus.DONE);
             }

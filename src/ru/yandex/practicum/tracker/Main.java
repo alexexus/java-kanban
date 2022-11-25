@@ -8,8 +8,6 @@ import ru.yandex.practicum.tracker.service.HistoryManager;
 import ru.yandex.practicum.tracker.service.InMemoryTaskManager;
 import ru.yandex.practicum.tracker.service.Managers;
 
-import java.util.ArrayList;
-
 public class Main {
 
     public static void main(String[] args) {
@@ -21,23 +19,20 @@ public class Main {
         task1.setName("Задача #1");
         task1.setDescription("Описание задачи #1");
         task1.setStatus(TaskStatus.NEW);
-        task1.setId(inMemoryTaskManager.getGeneratorId());
+
+        inMemoryTaskManager.createTask(task1);
 
         Task task2 = new Task();
         task2.setName("Задача #2");
         task2.setDescription("Описание задачи #2");
         task2.setStatus(TaskStatus.NEW);
-        task2.setId(inMemoryTaskManager.getGeneratorId());
 
-        inMemoryTaskManager.createTask(task1);
         inMemoryTaskManager.createTask(task2);
 
         Epic epic1 = new Epic();
         epic1.setName("Эпик #1");
         epic1.setDescription("Описание эпика #1");
         epic1.setStatus(TaskStatus.NEW);
-        epic1.setId(inMemoryTaskManager.getGeneratorId());
-        epic1.setSubtaskIds(new ArrayList<>());
 
         inMemoryTaskManager.createEpic(epic1);
 
@@ -45,7 +40,6 @@ public class Main {
         subtask1.setName("Подзадача #1 в эпике #1");
         subtask1.setDescription("Описание подзадачи #1 в эпике #1");
         subtask1.setStatus(TaskStatus.NEW);
-        subtask1.setId(inMemoryTaskManager.getGeneratorId());
         subtask1.setEpicId(3);
 
         inMemoryTaskManager.createSubtask(subtask1);
@@ -54,7 +48,6 @@ public class Main {
         subtask2.setName("Подзадача #2 в эпике #1");
         subtask2.setDescription("Описание подзадачи #2 в эпике #1");
         subtask2.setStatus(TaskStatus.NEW);
-        subtask2.setId(inMemoryTaskManager.getGeneratorId());
         subtask2.setEpicId(3);
 
         inMemoryTaskManager.createSubtask(subtask2);
@@ -63,7 +56,6 @@ public class Main {
         subtask3.setName("Подзадача #3 в эпике #1");
         subtask3.setDescription("Описание подзадачи #3 в эпике #1");
         subtask3.setStatus(TaskStatus.NEW);
-        subtask3.setId(inMemoryTaskManager.getGeneratorId());
         subtask3.setEpicId(3);
 
         inMemoryTaskManager.createSubtask(subtask3);
@@ -72,8 +64,6 @@ public class Main {
         epic2.setName("Эпик #2");
         epic2.setDescription("Описание эпика #2");
         epic2.setStatus(TaskStatus.NEW);
-        epic2.setId(inMemoryTaskManager.getGeneratorId());
-        epic2.setSubtaskIds(new ArrayList<>());
 
         inMemoryTaskManager.createEpic(epic2);
 

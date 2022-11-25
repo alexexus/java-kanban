@@ -2,7 +2,11 @@ package ru.yandex.practicum.tracker.service;
 
 import ru.yandex.practicum.tracker.model.Task;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class InMemoryHistoryManager implements HistoryManager {
 
@@ -13,21 +17,13 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (nodes.get(task.getId()) != null) {
-            removeNode(task.getId());
-        }
+        removeNode(task.getId());
         linkLast(task);
     }
 
     @Override
     public void remove(int taskId) {
-        if (nodes.get(taskId) != null) {
-            removeNode(taskId);
-        }
-        /*
-        В общем оказалось что надо было просто добавить проверку на то, есть ли в
-        истории задача которую мы хотим удалить и только потом удалять её.
-         */
+        removeNode(taskId);
     }
 
     @Override
@@ -43,17 +39,21 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     private void linkLast(Task task) {
         final Node lastNode = tail;
-        final Node newNode = new Node(lastNode, task , null);
+        final Node newNode = new Node(lastNode, task, null);
         tail = newNode;
-        if (lastNode == null)
+        if (lastNode == null) {
             head = newNode;
-        else
+        } else {
             lastNode.next = newNode;
+        }
         nodes.put(task.getId(), newNode);
     }
 
     private void removeNode(int id) {
         Node node = nodes.get(id);
+        if (node == null) {
+            return;
+        }
         final Node next = node.next;
         final Node prev = node.prev;
 
@@ -70,8 +70,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             next.prev = prev;
             node.next = null;
         }
-
-        node.task = null;
     }
 
     private static class Node {

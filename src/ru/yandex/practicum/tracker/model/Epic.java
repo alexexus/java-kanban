@@ -1,11 +1,12 @@
 package ru.yandex.practicum.tracker.model;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private List<Integer> subtaskIds;
+    private final List<Integer> subtaskIds = new ArrayList<>();
 
     public List<Integer> getSubtaskIds() {
         return Collections.unmodifiableList(subtaskIds);
@@ -21,10 +22,6 @@ public class Epic extends Task {
 
     public void clearSubtaskIds() {
         subtaskIds.clear();
-    }
-
-    public void setSubtaskIds(List<Integer> subtaskIds) {
-        this.subtaskIds = subtaskIds;
     }
 
     @Override

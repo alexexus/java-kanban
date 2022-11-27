@@ -34,13 +34,15 @@ class InMemoryHistoryManagerTest {
     @Test
     void add_shouldNotKeepDuplicates() {
         Task task1 = task(1);
-        Task task2 = task(1);
-        Task task3 = task(2);
+        Task task2 = task(2);
+        Task task3 = task(3);
         historyManager.add(task1);
         historyManager.add(task2);
         historyManager.add(task3);
+        historyManager.add(task1);
+        historyManager.add(task2);
 
-        List<Task> expected = List.of(task1, task3);
+        List<Task> expected = List.of(task3, task1, task2);
         List<Task> actual = historyManager.getHistory();
 
         assertEquals(expected, actual);
@@ -51,11 +53,18 @@ class InMemoryHistoryManagerTest {
         Task task1 = task(1);
         Task task2 = task(2);
         Task task3 = task(3);
+        Task task4 = task(4);
+        Task task5 = task(5);
         historyManager.add(task1);
-        historyManager.remove(2);
+        historyManager.add(task2);
         historyManager.add(task3);
+        historyManager.add(task4);
+        historyManager.add(task5);
+        historyManager.remove(task1.getId());
+        historyManager.remove(task3.getId());
+        historyManager.remove(task5.getId());
 
-        List<Task> expected = List.of(task1, task3);
+        List<Task> expected = List.of(task2, task4);
         List<Task> actual = historyManager.getHistory();
 
         assertEquals(expected, actual);

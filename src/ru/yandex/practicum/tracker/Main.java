@@ -95,8 +95,8 @@ public class Main {
     private static void printHistory(HistoryManager historyManager) {
         System.out.println();
         System.out.println("История просмотров:");
-        for (Task task : historyManager.getHistory()) {
-            System.out.printf(task.getId() + " ");
+        for (Integer task : historyManager.getHistory()) {
+            System.out.printf(task + " ");
         }
     }
 

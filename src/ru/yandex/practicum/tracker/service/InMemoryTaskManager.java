@@ -19,7 +19,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    public int generateId() {
+    private int generateId() {
         return ++generatorId;
     }
 
@@ -114,9 +114,6 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epicToUpdate = epics.get(epic.getId());
         epicToUpdate.setDescription(epic.getDescription());
         epicToUpdate.setName(epic.getName());
-//        for (Integer subtaskInEpicId : epic.getSubtaskIds()) {
-//            epicToUpdate.addSubtaskId(subtaskInEpicId);
-//        }
 
         updateEpicStatus(epicToUpdate);
     }

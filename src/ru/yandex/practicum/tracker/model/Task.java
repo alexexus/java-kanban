@@ -41,6 +41,14 @@ public class Task {
         this.description = description;
     }
 
+    public String toCsvRow(Task task) {
+        return task.getId() + ","
+                + task.getClass().getSimpleName() + ","
+                + task.getName() + ","
+                + task.getStatus() + ","
+                + task.getDescription();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -50,9 +58,9 @@ public class Task {
             return false;
         }
         Task task = (Task) o;
-        return Objects.equals(id, task.id)
+        return id == task.id
                 && Objects.equals(name, task.name)
-                && Objects.equals(status, task.status)
+                && status == task.status
                 && Objects.equals(description, task.description);
     }
 

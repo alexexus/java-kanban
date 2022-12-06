@@ -14,6 +14,16 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
+
+    public String toCsvRow(Subtask subtask) {
+        return subtask.getId() + ","
+                + subtask.getClass().getSimpleName() + ","
+                + subtask.getName() + ","
+                + subtask.getStatus() + ","
+                + subtask.getDescription() + ","
+                + subtask.getEpicId();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Subtask) || !super.equals(o)) {

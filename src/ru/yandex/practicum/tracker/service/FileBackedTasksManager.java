@@ -15,55 +15,22 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    File file;
+    private final File file;
 
-    public FileBackedTasksManager(File file) {
+    private FileBackedTasksManager(File file) {
         this.file = file;
     }
 
-    public static void main(String[] args) {
-
-//        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(new File("src/ru/yandex/practicum/tracker/service/file.csv"));
-//        Task task1 = new Task();
-//        task1.setName("Задача #1");
-//        task1.setDescription("Описание задачи #1");
-//        task1.setStatus(TaskStatus.NEW);
-//        fileBackedTasksManager.createTask(task1);
-//        Epic epic1 = new Epic();
-//        epic1.setName("Эпик #1");
-//        epic1.setDescription("Описание эпика #1");
-//        epic1.setStatus(TaskStatus.NEW);
-//        fileBackedTasksManager.createEpic(epic1);
-//        Subtask subtask1 = new Subtask();
-//        subtask1.setName("Подзадача #1 в эпике #1");
-//        subtask1.setDescription("Описание подзадачи #1 в эпике #1");
-//        subtask1.setStatus(TaskStatus.NEW);
-//        subtask1.setEpicId(2);
-//        fileBackedTasksManager.createSubtask(subtask1);
-//        fileBackedTasksManager.getTaskById(1);
-//        fileBackedTasksManager.getEpicById(2);
-//        fileBackedTasksManager.getSubtaskById(3);
-
-        FileBackedTasksManager fileBackedTasksManager1 = loadFromFile(new File("src/ru/yandex/practicum/tracker/service/file.csv"));
-//        System.out.println(fileBackedTasksManager1.getTaskById(1));
-//        System.out.println(fileBackedTasksManager1.getEpicById(2));
-//        System.out.println(fileBackedTasksManager1.getSubtaskById(3));
-//        System.out.println(fileBackedTasksManager1.getTaskById(4));
-//        System.out.println(fileBackedTasksManager1.getSubtaskById(5));
-//        System.out.println(Managers.getDefaultHistory().getHistory());
-
-    }
-
     private void save() {
-        try (FileWriter fileWriter = new FileWriter("src/ru/yandex/practicum/tracker/service/file.csv")) {
-            for (Task task : super.getTasks()) {
-                fileWriter.write(toString(task) + "\n");
+        try (FileWriter fileWriter = new FileWriter("resources/file.csv")) {
+            for (Task task : getTasks()) {
+                fileWriter.write(task.toCsvRow(task) + "\n");
             }
-            for (Epic epic : super.getEpics()) {
-                fileWriter.write(toString(epic) + "\n");
+            for (Epic epic : getEpics()) {
+                fileWriter.write(epic.toCsvRow(epic) + "\n");
             }
-            for (Subtask subtask : super.getSubtasks()) {
-                fileWriter.write(toString(subtask) + "\n");
+            for (Subtask subtask : getSubtasks()) {
+                fileWriter.write(subtask.toCsvRow(subtask) + "\n");
             }
 
             fileWriter.write("\n");
@@ -74,7 +41,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    public static String historyToString(HistoryManager manager) {
+    private static String historyToString(HistoryManager manager) {
         StringBuilder stringBuilder = new StringBuilder();
         for (Integer task : manager.getHistory()) {
             stringBuilder.append(task).append(",");
@@ -82,7 +49,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return stringBuilder.toString();
     }
 
-    public static List<Task> historyFromString(String value) {
+    private static List<Task> historyFromString(String value) {
         List<Task> tasks = new ArrayList<>();
         String[] split = value.split(",");
         for (String str : split) {
@@ -93,38 +60,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return tasks;
     }
 
-    public String toString(Task task) {
-        String str = "";
-        switch (task.getClass().getSimpleName()) {
-            case "Task":
-                str = task.getId() + ","
-                        + task.getClass().getSimpleName() + ","
-                        + task.getName() + ","
-                        + task.getStatus() + ","
-                        + task.getDescription();
-                break;
-            case "Epic":
-                Epic epic = (Epic) task;
-                str = epic.getId() + ","
-                        + epic.getClass().getSimpleName() + ","
-                        + epic.getName() + ","
-                        + epic.getStatus() + ","
-                        + epic.getDescription();
-                break;
-            case "Subtask":
-                Subtask subtask = (Subtask) task;
-                str = subtask.getId() + ","
-                        + subtask.getClass().getSimpleName() + ","
-                        + subtask.getName() + ","
-                        + subtask.getStatus() + ","
-                        + subtask.getDescription() + ","
-                        + subtask.getEpicId();
-                break;
-        }
-        return str;
-    }
-
-    public static Task fromString(String value) {
+    private static Task fromString(String value) {
         Task task = new Task();
         String[] split = value.split(",");
         switch (split[1]) {
@@ -155,29 +91,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
-    /*
-    Пара вопросов у меня появилось:
-    1) Если загружаем из файла "file1" где была такая структура:
-
-    1,Task,Задача #1,NEW,Описание задачи #1
-    2,Epic,Эпик #1,NEW,Описание эпика #1
-    3,Subtask,Подзадача #1 в эпике #1,NEW,Описание подзадачи #1 в эпике #1,2
-    4,Task,Задача #1,NEW,Описание задачи #1
-    5,Subtask,Подзадача #1 в эпике #1,NEW,Описание подзадачи #1 в эпике #1,2
-
-    То на выходе в файле "file" структура будет в виде:
-
-    1,Task,Задача #1,NEW,Описание задачи #1
-    4,Task,Задача #1,NEW,Описание задачи #1
-    2,Epic,Эпик #1,NEW,Описание эпика #1
-    3,Subtask,Подзадача #1 в эпике #1,NEW,Описание подзадачи #1 в эпике #1,2
-    5,Subtask,Подзадача #1 в эпике #1,NEW,Описание подзадачи #1 в эпике #1,2
-
-    Во-первых, меняется очередность, не понятно почему, во-вторых, если попробовать загрузить с этого файла еще раз,
-    то у первой "Task" будет "id" - 1, потом создается вторая "Task", но "id" у нее не 4, а почему-то 2, что неверно.
-
-    В общем не могу понять как присваивать "id" который в строке, а не который генерирует "generatorId".
-     */
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
         try (BufferedReader fileReader = new BufferedReader(new FileReader(file))) {
@@ -189,20 +102,25 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 String[] split = str.split(",");
                 switch (split[1]) {
                     case "Task":
-                        fileBackedTasksManager.createTask(fromString(str));
+                        Task task = fromString(str);
+                        //generatorId = 0;
+                        fileBackedTasksManager.createTask(task);
                         break;
                     case "Epic":
-                        fileBackedTasksManager.createEpic((Epic) fromString(str));
+                        Epic epic = (Epic) fromString(str);
+                        fileBackedTasksManager.createEpic(epic);
                         break;
                     case "Subtask":
-                        fileBackedTasksManager.createSubtask((Subtask) fromString(str));
+                        Subtask subtask = (Subtask) fromString(str);
+                        fileBackedTasksManager.createSubtask(subtask);
                         break;
                     default:
-                        for (Task task : historyFromString(str)) {
-                            Managers.getDefaultHistory().add(task);
+                        for (Task tasksInHistory : historyFromString(str)) {
+                            Managers.getDefaultHistory().add(tasksInHistory);
                         }
                 }
             }
+            fileBackedTasksManager.save();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -211,18 +129,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     @Override
     public void createTask(Task task) {
+        generatorId = task.getId() - 1;
         super.createTask(task);
         save();
     }
 
     @Override
     public void createEpic(Epic epic) {
+        generatorId = epic.getId() - 1;
         super.createEpic(epic);
         save();
     }
 
     @Override
     public void createSubtask(Subtask subtask) {
+        generatorId = subtask.getId() - 1;
         super.createSubtask(subtask);
         save();
     }
@@ -280,6 +201,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         super.deleteAllSubtasks();
         save();
     }
+
+    /*
+    Если убрать из методов getById() первую строчку с super-ом,
+    то он не будет сохранять в истории последний вызов getById()
+    потому что save() будет идти перед самим получение таска.
+    То есть мы его получим и в истории он будет, но в файле нет.
+
+    А как вызвать метод save() после return я не знаю.
+     */
 
     @Override
     public Task getTaskById(int taskId) {

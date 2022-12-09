@@ -24,15 +24,6 @@ public class Epic extends Task {
         subtaskIds.clear();
     }
 
-
-    public String toCsvRow(Epic epic) {
-        return epic.getId() + ","
-                + epic.getClass().getSimpleName() + ","
-                + epic.getName() + ","
-                + epic.getStatus() + ","
-                + epic.getDescription();
-    }
-
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Epic) || !super.equals(o)) {

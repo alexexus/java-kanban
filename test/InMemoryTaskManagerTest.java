@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
@@ -43,14 +44,11 @@ class InMemoryTaskManagerTest {
 
         taskManager.deleteAllTasks();
 
-        List<Task> expected = List.of();
-        List<Task> actual = taskManager.getTasks();
-
-        assertEquals(expected, actual);
+        assertTrue(taskManager.getTasks().isEmpty());
     }
 
     @Test
-    void deleteAllEpics_shouldDeleteAllEpics() {
+    void deleteAllEpics_shouldDeleteAllEpicsAndSubtasks() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.IN_PROGRESS, 2, new ArrayList<>());
         Epic epic3 = epic("name3", "description3", TaskStatus.DONE, 3, new ArrayList<>());
@@ -61,10 +59,7 @@ class InMemoryTaskManagerTest {
 
         taskManager.deleteAllEpics();
 
-        List<Epic> expected = List.of();
-        List<Epic> actual = taskManager.getEpics();
-
-        assertEquals(expected, actual);
+        assertTrue(taskManager.getEpics().isEmpty() && taskManager.getSubtasks().isEmpty());
     }
 
     @Test
@@ -83,14 +78,14 @@ class InMemoryTaskManagerTest {
 
         taskManager.deleteAllSubtasks();
 
-        List<Subtask> expected = List.of();
-        List<Subtask> actual = taskManager.getSubtasks();
-
-        assertEquals(expected, actual);
+        assertTrue(taskManager.getSubtasks().isEmpty());
+        for (Epic epic : taskManager.getEpics()) {
+            assertTrue(epic.getSubtaskIds().isEmpty());
+        }
     }
 
     @Test
-    void getTaskById_shouldGetTaskById() {
+    void getTaskById_shouldReturnTaskById() {
         Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
         taskManager.createTask(task1);
 
@@ -100,7 +95,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getEpicById_shouldGetEpicById() {
+    void getEpicById_shouldReturnEpicById() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         taskManager.createEpic(epic1);
 
@@ -110,7 +105,7 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    void getSubtaskById_shouldGetSubtaskById() {
+    void getSubtaskById_shouldReturnSubtaskById() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         taskManager.createEpic(epic1);
         Subtask subtask1 = subtask("name2", "description2", TaskStatus.NEW, 2, 1);
@@ -169,6 +164,8 @@ class InMemoryTaskManagerTest {
         List<Subtask> actual = taskManager.getSubtasks();
 
         assertEquals(expected, actual);
+        assertEquals(List.of(subtask1.getId(), subtask2.getId()), epic1.getSubtaskIds());
+        assertEquals(List.of(subtask3.getId()), epic2.getSubtaskIds());
     }
 
     @Test
@@ -239,21 +236,13 @@ class InMemoryTaskManagerTest {
     void removeTaskById_shouldRemoveTaskById() {
         Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
         Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2);
-        Task task3 = task("name3", "description3", TaskStatus.DONE, 3);
-        Task task4 = task("name4", "description4", TaskStatus.NEW, 4);
-        Task task5 = task("name5", "description5", TaskStatus.IN_PROGRESS, 5);
 
         taskManager.createTask(task1);
         taskManager.createTask(task2);
-        taskManager.createTask(task3);
-        taskManager.createTask(task4);
-        taskManager.createTask(task5);
 
         taskManager.removeTaskById(1);
-        taskManager.removeTaskById(3);
-        taskManager.removeTaskById(5);
 
-        List<Task> expected = List.of(task2, task4);
+        List<Task> expected = List.of(task2);
         List<Task> actual = taskManager.getTasks();
 
         assertEquals(expected, actual);
@@ -263,24 +252,19 @@ class InMemoryTaskManagerTest {
     void removeEpicById_shouldRemoveEpicById() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.IN_PROGRESS, 2, new ArrayList<>());
-        Epic epic3 = epic("name3", "description3", TaskStatus.DONE, 3, new ArrayList<>());
-        Epic epic4 = epic("name4", "description4", TaskStatus.NEW, 4, new ArrayList<>());
-        Epic epic5 = epic("name5", "description5", TaskStatus.IN_PROGRESS, 5, new ArrayList<>());
+        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
-        taskManager.createEpic(epic3);
-        taskManager.createEpic(epic4);
-        taskManager.createEpic(epic5);
+        taskManager.createSubtask(subtask1);
 
         taskManager.removeEpicById(1);
-        taskManager.removeEpicById(3);
-        taskManager.removeEpicById(5);
 
-        List<Epic> expected = List.of(epic2, epic4);
+        List<Epic> expected = List.of(epic2);
         List<Epic> actual = taskManager.getEpics();
 
         assertEquals(expected, actual);
+        assertTrue(epic1.getSubtaskIds().isEmpty());
     }
 
     @Test
@@ -309,6 +293,8 @@ class InMemoryTaskManagerTest {
         List<Subtask> actual = taskManager.getSubtasks();
 
         assertEquals(expected, actual);
+        assertEquals(List.of(subtask7.getId()), taskManager.getEpicById(1).getSubtaskIds());
+        assertEquals(List.of(subtask4.getId()), taskManager.getEpicById(2).getSubtaskIds());
     }
 
     @Test
@@ -333,6 +319,43 @@ class InMemoryTaskManagerTest {
         List<Subtask> actual = taskManager.getSubtasksByEpicId(1);
 
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void updateEpicStatus_shouldUpdateEpicStatus() {
+        Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
+        Subtask subtask2 = subtask("name2", "description2", TaskStatus.NEW, 2, 1);
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
+        Subtask subtask4 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 1);
+        Subtask subtask5 = subtask("name5", "description5", TaskStatus.IN_PROGRESS, 5, 1);
+        Subtask subtask6 = subtask("name6", "description6", TaskStatus.DONE, 6, 1);
+        Subtask subtask7 = subtask("name7", "description7", TaskStatus.DONE, 7, 1);
+
+        taskManager.createEpic(epic1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+
+        assertEquals(TaskStatus.NEW, epic1.getStatus());
+
+        taskManager.createSubtask(subtask4);
+        taskManager.createSubtask(subtask5);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus());
+
+        taskManager.removeSubtaskById(4);
+        taskManager.removeSubtaskById(5);
+
+        assertEquals(TaskStatus.NEW, epic1.getStatus());
+
+        taskManager.createSubtask(subtask6);
+        taskManager.createSubtask(subtask7);
+
+        assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus());
+
+        taskManager.removeSubtaskById(2);
+        taskManager.removeSubtaskById(3);
+
+        assertEquals(TaskStatus.DONE, epic1.getStatus());
     }
 
     private static Task task(String name, String description, TaskStatus status, int id) {

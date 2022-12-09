@@ -41,12 +41,9 @@ public class Task {
         this.description = description;
     }
 
-    public String toCsvRow(Task task) {
-        return task.getId() + ","
-                + task.getClass().getSimpleName() + ","
-                + task.getName() + ","
-                + task.getStatus() + ","
-                + task.getDescription();
+    public String toCsvRow() {
+        return String.format("%s" + "," + "%s" + "," + "%s" + "," + "%s" + "," + "%s",
+                id, getClass().getSimpleName(), name, status, description);
     }
 
     @Override

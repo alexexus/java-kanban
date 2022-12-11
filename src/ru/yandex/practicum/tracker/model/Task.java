@@ -42,7 +42,7 @@ public class Task {
     }
 
     public String toCsvRow() {
-        return String.format("%s" + "," + "%s" + "," + "%s" + "," + "%s" + "," + "%s",
+        return String.format("%d,%s,%s,%s,%s",
                 id, getClass().getSimpleName(), name, status, description);
     }
 

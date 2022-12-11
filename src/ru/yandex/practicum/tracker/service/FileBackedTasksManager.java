@@ -15,16 +15,16 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
+    private static final int ID_INDEX = 0;
+    private static final int CLASS_INDEX = 1;
+    private static final int NAME_INDEX = 2;
+    private static final int STATUS_INDEX = 3;
+    private static final int DESCRIPTION_INDEX = 4;
+    private static final int EPIC_ID_INDEX = 5;
+
     private final File file;
 
-    private static final int ID_INDEX_IN_CSV_ROW = 0;
-    private static final int CLASS_INDEX_IN_CSV_ROW = 1;
-    private static final int NAME_INDEX_IN_CSV_ROW = 2;
-    private static final int STATUS_INDEX_IN_CSV_ROW = 3;
-    private static final int DESCRIPTION_INDEX_IN_CSV_ROW = 4;
-    private static final int EPIC_ID_INDEX_IN_CSV_ROW = 5;
-
-    private FileBackedTasksManager(File file) {
+    public FileBackedTasksManager(File file) {
         this.file = file;
     }
 
@@ -130,7 +130,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     continue;
                 }
                 String[] split = str.split(",");
-                switch (split[CLASS_INDEX_IN_CSV_ROW]) {
+                switch (split[CLASS_INDEX]) {
                     case "Task":
                         Task task = fromString(str);
                         fileBackedTasksManager.updateTask(task);
@@ -153,8 +153,16 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         }
                         break;
                     default:
-                        for (Task tasksInHistory : historyFromString(str)) {
-                            Managers.getDefaultHistory().add(tasksInHistory);
+                        for (Integer taskId : historyFromString(str)) {
+                            if (fileBackedTasksManager.getTaskById(taskId) == null &&
+                                    fileBackedTasksManager.getEpicById(taskId) == null) {
+                                fileBackedTasksManager.getSubtaskById(taskId);
+                            } else if (fileBackedTasksManager.getEpicById(taskId) == null &&
+                                    fileBackedTasksManager.getSubtaskById(taskId) == null) {
+                                fileBackedTasksManager.getTaskById(taskId);
+                            } else {
+                                fileBackedTasksManager.getEpicById(taskId);
+                            }
                         }
                 }
             }
@@ -193,15 +201,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return stringBuilder.toString();
     }
 
-    private static List<Task> historyFromString(String value) {
-        List<Task> tasks = new ArrayList<>();
+    private static List<Integer> historyFromString(String value) {
+        List<Integer> taskIds = new ArrayList<>();
         String[] ids = value.split(",");
         for (String id : ids) {
-            Task task = new Task();
-            task.setId(Integer.parseInt(id));
-            tasks.add(task);
+            taskIds.add(Integer.valueOf(id));
         }
-        return tasks;
+        return taskIds;
     }
 
     private static Task fromString(String value) {
@@ -209,26 +215,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String[] split = value.split(",");
         switch (split[1]) {
             case "Task":
-                task.setId(Integer.parseInt(split[ID_INDEX_IN_CSV_ROW]));
-                task.setDescription(split[DESCRIPTION_INDEX_IN_CSV_ROW]);
-                task.setStatus(TaskStatus.valueOf(split[STATUS_INDEX_IN_CSV_ROW]));
-                task.setName(split[NAME_INDEX_IN_CSV_ROW]);
+                task.setId(Integer.parseInt(split[ID_INDEX]));
+                task.setDescription(split[DESCRIPTION_INDEX]);
+                task.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
+                task.setName(split[NAME_INDEX]);
                 break;
             case "Epic":
                 Epic epic = new Epic();
-                epic.setId(Integer.parseInt(split[ID_INDEX_IN_CSV_ROW]));
-                epic.setDescription(split[DESCRIPTION_INDEX_IN_CSV_ROW]);
-                epic.setStatus(TaskStatus.valueOf(split[STATUS_INDEX_IN_CSV_ROW]));
-                epic.setName(split[NAME_INDEX_IN_CSV_ROW]);
+                epic.setId(Integer.parseInt(split[ID_INDEX]));
+                epic.setDescription(split[DESCRIPTION_INDEX]);
+                epic.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
+                epic.setName(split[NAME_INDEX]);
                 task = epic;
                 break;
             case "Subtask":
                 Subtask subtask = new Subtask();
-                subtask.setId(Integer.parseInt(split[ID_INDEX_IN_CSV_ROW]));
-                subtask.setDescription(split[DESCRIPTION_INDEX_IN_CSV_ROW]);
-                subtask.setStatus(TaskStatus.valueOf(split[STATUS_INDEX_IN_CSV_ROW]));
-                subtask.setName(split[NAME_INDEX_IN_CSV_ROW]);
-                subtask.setEpicId(Integer.parseInt(split[EPIC_ID_INDEX_IN_CSV_ROW]));
+                subtask.setId(Integer.parseInt(split[ID_INDEX]));
+                subtask.setDescription(split[DESCRIPTION_INDEX]);
+                subtask.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
+                subtask.setName(split[NAME_INDEX]);
+                subtask.setEpicId(Integer.parseInt(split[EPIC_ID_INDEX]));
                 task = subtask;
                 break;
         }

@@ -1,5 +1,5 @@
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
@@ -15,7 +15,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryTaskManagerTest {
 
-    private final TaskManager taskManager = new InMemoryTaskManager();
+    private TaskManager taskManager;
+
+    @BeforeEach
+    void setUp() {
+        taskManager = createTaskManager();
+    }
+
+    protected TaskManager createTaskManager() {
+        return new InMemoryTaskManager();
+    }
 
     @Test
     void getTasks_shouldReturnEmptyTasks() {
@@ -335,30 +344,44 @@ class InMemoryTaskManagerTest {
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
 
-        assertEquals(TaskStatus.NEW, epic1.getStatus());
+        assertEquals(TaskStatus.NEW, epic1.getStatus(),
+                "Статус эпика должен быть NEW, " +
+                        "так как в нем 2 подзадачи со статусом NEW");
 
         taskManager.createSubtask(subtask4);
         taskManager.createSubtask(subtask5);
 
-        assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus(),
+                "Статус эпика должен быть IN_PROGRESS, " +
+                        "так как в нем 2 подзадачи со статусом NEW" +
+                        "и 2 подзадачи со статусом IN_PROGRESS");
 
         taskManager.removeSubtaskById(4);
         taskManager.removeSubtaskById(5);
 
-        assertEquals(TaskStatus.NEW, epic1.getStatus());
+        assertEquals(TaskStatus.NEW, epic1.getStatus(),
+                "Статус эпика должен быть NEW, " +
+                        "так как в нем 2 подзадачи со статусом NEW, " +
+                        "а 2 подзадачи со статусом IN_PROGRESS удалены");
 
         taskManager.createSubtask(subtask6);
         taskManager.createSubtask(subtask7);
 
-        assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus(),
+                "Статус эпика должен быть IN_PROGRESS, " +
+                        "так как в нем 2 подзадачи со статусом NEW, " +
+                        "и 2 подзадачи со статусом DONE");
 
         taskManager.removeSubtaskById(2);
         taskManager.removeSubtaskById(3);
 
-        assertEquals(TaskStatus.DONE, epic1.getStatus());
+        assertEquals(TaskStatus.DONE, epic1.getStatus(),
+                "Статус эпика должен быть DONE, " +
+                        "так как в нем 2 подзадачи со статусом DONE, " +
+                        "а 2 подзадачи со статусом NEW удалены");
     }
 
-    private static Task task(String name, String description, TaskStatus status, int id) {
+    protected static Task task(String name, String description, TaskStatus status, int id) {
         Task task = new Task();
         task.setName(name);
         task.setDescription(description);
@@ -367,7 +390,7 @@ class InMemoryTaskManagerTest {
         return task;
     }
 
-    private static Epic epic(String name, String description, TaskStatus status, int id, List<Integer> subtaskIds) {
+    protected static Epic epic(String name, String description, TaskStatus status, int id, List<Integer> subtaskIds) {
         Epic epic = new Epic();
         epic.setName(name);
         epic.setDescription(description);
@@ -376,7 +399,7 @@ class InMemoryTaskManagerTest {
         return epic;
     }
 
-    private static Subtask subtask(String name, String description, TaskStatus status, int id, int epicId) {
+    protected static Subtask subtask(String name, String description, TaskStatus status, int id, int epicId) {
         Subtask subtask = new Subtask();
         subtask.setName(name);
         subtask.setDescription(description);

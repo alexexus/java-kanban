@@ -345,40 +345,40 @@ class InMemoryTaskManagerTest {
         taskManager.createSubtask(subtask3);
 
         assertEquals(TaskStatus.NEW, epic1.getStatus(),
-                "Статус эпика должен быть NEW, " +
-                        "так как в нем 2 подзадачи со статусом NEW");
+                "Epic status should be NEW, " +
+                        "because it has 2 subtasks with status NEW");
 
         taskManager.createSubtask(subtask4);
         taskManager.createSubtask(subtask5);
 
         assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus(),
-                "Статус эпика должен быть IN_PROGRESS, " +
-                        "так как в нем 2 подзадачи со статусом NEW" +
-                        "и 2 подзадачи со статусом IN_PROGRESS");
+                "Epic status should be IN_PROGRESS, " +
+                        "because it has 2 subtasks with status NEW" +
+                        "and 2 subtasks with status IN_PROGRESS");
 
         taskManager.removeSubtaskById(4);
         taskManager.removeSubtaskById(5);
 
         assertEquals(TaskStatus.NEW, epic1.getStatus(),
-                "Статус эпика должен быть NEW, " +
-                        "так как в нем 2 подзадачи со статусом NEW, " +
-                        "а 2 подзадачи со статусом IN_PROGRESS удалены");
+                "Epic status should be NEW, " +
+                        "because it has 2 subtasks with NEW status, " +
+                        "and 2 subtasks with status IN_PROGRESS have been deleted");
 
         taskManager.createSubtask(subtask6);
         taskManager.createSubtask(subtask7);
 
         assertEquals(TaskStatus.IN_PROGRESS, epic1.getStatus(),
-                "Статус эпика должен быть IN_PROGRESS, " +
-                        "так как в нем 2 подзадачи со статусом NEW, " +
-                        "и 2 подзадачи со статусом DONE");
+                "Epic status should be IN_PROGRESS, " +
+                        "because it has 2 subtasks with NEW status, " +
+                        "and 2 subtasks with status DONE");
 
         taskManager.removeSubtaskById(2);
         taskManager.removeSubtaskById(3);
 
         assertEquals(TaskStatus.DONE, epic1.getStatus(),
-                "Статус эпика должен быть DONE, " +
-                        "так как в нем 2 подзадачи со статусом DONE, " +
-                        "а 2 подзадачи со статусом NEW удалены");
+                "Epic status should be DONE, " +
+                        "because it has 2 subtasks with DONE status, " +
+                        "and 2 subtasks with status NEW have been deleted");
     }
 
     protected static Task task(String name, String description, TaskStatus status, int id) {

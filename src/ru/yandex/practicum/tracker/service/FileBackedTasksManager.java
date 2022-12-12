@@ -154,21 +154,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         break;
                     default:
                         for (Integer taskId : historyFromString(str)) {
-                            if (fileBackedTasksManager.getTaskById(taskId) == null &&
-                                    fileBackedTasksManager.getEpicById(taskId) == null) {
-                                fileBackedTasksManager.getSubtaskById(taskId);
-                            } else if (fileBackedTasksManager.getEpicById(taskId) == null &&
-                                    fileBackedTasksManager.getSubtaskById(taskId) == null) {
-                                fileBackedTasksManager.getTaskById(taskId);
-                            } else {
-                                fileBackedTasksManager.getEpicById(taskId);
-                            }
+                            fileBackedTasksManager.getEpicById(taskId);
+                            fileBackedTasksManager.getSubtaskById(taskId);
+                            fileBackedTasksManager.getTaskById(taskId);
                         }
                 }
             }
             fileBackedTasksManager.save();
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException(e.getMessage());
         }
         return fileBackedTasksManager;
     }
@@ -189,7 +183,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             fileWriter.write(historyToString(Managers.getDefaultHistory().getHistory()));
 
         } catch (IOException e) {
-            throw new ManagerSaveException();
+            throw new ManagerSaveException(e.getMessage());
         }
     }
 

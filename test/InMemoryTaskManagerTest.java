@@ -7,8 +7,10 @@ import ru.yandex.practicum.tracker.model.TaskStatus;
 import ru.yandex.practicum.tracker.service.InMemoryTaskManager;
 import ru.yandex.practicum.tracker.service.TaskManager;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -98,9 +100,7 @@ class InMemoryTaskManagerTest {
         Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
         taskManager.createTask(task1);
 
-        Task actual = taskManager.getTaskById(1);
-
-        assertEquals(task1, actual);
+        assertEquals(task1, taskManager.getTaskById(1));
     }
 
     @Test
@@ -108,9 +108,7 @@ class InMemoryTaskManagerTest {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         taskManager.createEpic(epic1);
 
-        Epic actual = taskManager.getEpicById(1);
-
-        assertEquals(epic1, actual);
+        assertEquals(epic1, taskManager.getEpicById(1));
     }
 
     @Test
@@ -120,9 +118,7 @@ class InMemoryTaskManagerTest {
         Subtask subtask1 = subtask("name2", "description2", TaskStatus.NEW, 2, 1);
         taskManager.createSubtask(subtask1);
 
-        Subtask actual = taskManager.getSubtaskById(2);
-
-        assertEquals(subtask1, actual);
+        assertEquals(subtask1, taskManager.getSubtaskById(2));
     }
 
     @Test
@@ -134,10 +130,7 @@ class InMemoryTaskManagerTest {
         taskManager.createTask(task2);
         taskManager.createTask(task3);
 
-        List<Task> expected = List.of(task1, task2, task3);
-        List<Task> actual = taskManager.getTasks();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(task1, task2, task3), taskManager.getTasks());
     }
 
     @Test
@@ -149,10 +142,7 @@ class InMemoryTaskManagerTest {
         taskManager.createEpic(epic2);
         taskManager.createEpic(epic3);
 
-        List<Epic> expected = List.of(epic1, epic2, epic3);
-        List<Epic> actual = taskManager.getEpics();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(epic1, epic2, epic3), taskManager.getEpics());
     }
 
     @Test
@@ -169,10 +159,7 @@ class InMemoryTaskManagerTest {
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
 
-        List<Subtask> expected = List.of(subtask1, subtask2, subtask3);
-        List<Subtask> actual = taskManager.getSubtasks();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(subtask1, subtask2, subtask3), taskManager.getSubtasks());
         assertEquals(List.of(subtask1.getId(), subtask2.getId()), epic1.getSubtaskIds());
         assertEquals(List.of(subtask3.getId()), epic2.getSubtaskIds());
     }
@@ -191,10 +178,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateTask(task3);
         taskManager.updateTask(task4);
 
-        List<Task> expected = List.of(task3, task4);
-        List<Task> actual = taskManager.getTasks();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(task3, task4), taskManager.getTasks());
     }
 
     @Test
@@ -211,10 +195,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateEpic(epic3);
         taskManager.updateEpic(epic4);
 
-        List<Epic> expected = List.of(epic3, epic4);
-        List<Epic> actual = taskManager.getEpics();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(epic3, epic4), taskManager.getEpics());
     }
 
     @Test
@@ -235,10 +216,7 @@ class InMemoryTaskManagerTest {
         taskManager.updateSubtask(subtask3);
         taskManager.updateSubtask(subtask4);
 
-        List<Subtask> expected = List.of(subtask3, subtask4);
-        List<Subtask> actual = taskManager.getSubtasks();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(subtask3, subtask4), taskManager.getSubtasks());
     }
 
     @Test
@@ -251,10 +229,7 @@ class InMemoryTaskManagerTest {
 
         taskManager.removeTaskById(1);
 
-        List<Task> expected = List.of(task2);
-        List<Task> actual = taskManager.getTasks();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(task2), taskManager.getTasks());
     }
 
     @Test
@@ -269,10 +244,7 @@ class InMemoryTaskManagerTest {
 
         taskManager.removeEpicById(1);
 
-        List<Epic> expected = List.of(epic2);
-        List<Epic> actual = taskManager.getEpics();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(epic2), taskManager.getEpics());
         assertTrue(epic1.getSubtaskIds().isEmpty());
     }
 
@@ -298,10 +270,7 @@ class InMemoryTaskManagerTest {
         taskManager.removeSubtaskById(5);
         taskManager.removeSubtaskById(6);
 
-        List<Subtask> expected = List.of(subtask4, subtask7);
-        List<Subtask> actual = taskManager.getSubtasks();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(subtask4, subtask7), taskManager.getSubtasks());
         assertEquals(List.of(subtask7.getId()), taskManager.getEpicById(1).getSubtaskIds());
         assertEquals(List.of(subtask4.getId()), taskManager.getEpicById(2).getSubtaskIds());
     }
@@ -324,10 +293,7 @@ class InMemoryTaskManagerTest {
         taskManager.createSubtask(subtask6);
         taskManager.createSubtask(subtask7);
 
-        List<Subtask> expected = List.of(subtask3, subtask5, subtask7);
-        List<Subtask> actual = taskManager.getSubtasksByEpicId(1);
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(subtask3, subtask5, subtask7), taskManager.getSubtasksByEpicId(1));
     }
 
     @Test
@@ -379,6 +345,50 @@ class InMemoryTaskManagerTest {
                 "Epic status should be DONE, " +
                         "because it has 2 subtasks with DONE status, " +
                         "and 2 subtasks with status NEW have been deleted");
+    }
+
+    @Test
+    void getEndTime_shouldReturnEndTimeOfEpic() {
+        Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
+        Subtask subtask2 = subtask("name2", "description2", TaskStatus.NEW, 2, 1);
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
+        subtask2.setDuration(20);
+        subtask3.setDuration(30);
+        subtask2.setStartTime(LocalDateTime.of(2000, 1, 4, 0, 0));
+        subtask3.setStartTime(LocalDateTime.of(2000, 1, 2, 0, 0));
+
+        taskManager.createEpic(epic1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+
+        assertEquals(LocalDateTime.of(2000, 1, 2, 0, 50), epic1.getEndTime());
+    }
+
+    @Test
+    void getEndTime_shouldReturnEndTimeOfTask() {
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
+        task1.setDuration(20);
+        task1.setStartTime(LocalDateTime.of(2001, 1, 1, 0, 0));
+        assertEquals(LocalDateTime.of(2001, 1, 1, 0, 20), task1.getEndTime());
+    }
+
+    /*
+    Почему-то не хочет сортировать в правильном порядке...
+     */
+    @Test
+    void getPrioritizedTasks_shouldReturnSortedTasks() {
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
+        Epic epic2 = epic("name2", "description2", TaskStatus.NEW, 2, new ArrayList<>());
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 2);
+        task1.setStartTime(LocalDateTime.of(2001, 1, 1, 0, 0));
+        epic2.setStartTime(LocalDateTime.of(2002, 1, 1, 0, 0));
+        subtask3.setStartTime(LocalDateTime.of(2003, 1, 1, 0, 0));
+
+        taskManager.updateTask(task1);
+        taskManager.updateEpic(epic2);
+        taskManager.updateSubtask(subtask3);
+
+        assertEquals(List.of(task1, epic2, subtask3), new ArrayList<>(taskManager.getPrioritizedTasks()));
     }
 
     protected static Task task(String name, String description, TaskStatus status, int id) {

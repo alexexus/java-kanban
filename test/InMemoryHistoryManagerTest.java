@@ -25,10 +25,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task2);
         historyManager.add(task3);
 
-        List<Integer> expected = List.of(task1.getId(), task2.getId(), task3.getId());
-        List<Integer> actual = historyManager.getHistory();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(task1.getId(), task2.getId(), task3.getId()), historyManager.getHistory());
     }
 
     @Test
@@ -42,10 +39,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task1);
         historyManager.add(task2);
 
-        List<Integer> expected = List.of(task3.getId(), task1.getId(), task2.getId());
-        List<Integer> actual = historyManager.getHistory();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(task3.getId(), task1.getId(), task2.getId()), historyManager.getHistory());
     }
 
     @Test
@@ -64,10 +58,7 @@ class InMemoryHistoryManagerTest {
         historyManager.remove(task3.getId());
         historyManager.remove(task5.getId());
 
-        List<Integer> expected = List.of(task2.getId(), task4.getId());
-        List<Integer> actual = historyManager.getHistory();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(task2.getId(), task4.getId()), historyManager.getHistory());
     }
 
     @Test
@@ -80,10 +71,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task3);
         historyManager.add(task1);
 
-        List<Integer> expected = List.of(task2.getId(), task3.getId(), task1.getId());
-        List<Integer> actual = historyManager.getHistory();
-
-        assertEquals(expected, actual);
+        assertEquals(List.of(task2.getId(), task3.getId(), task1.getId()), historyManager.getHistory());
     }
 
     private static Task task(int id) {

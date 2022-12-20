@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private static final int NAME_INDEX = 2;
     private static final int STATUS_INDEX = 3;
     private static final int DESCRIPTION_INDEX = 4;
-    private static final int EPIC_ID_INDEX = 5;
+    private static final int DURATION_INDEX = 5;
+    private static final int START_TIME_INDEX = 6;
+    private static final int EPIC_ID_INDEX = 7;
 
     private final File file;
 
@@ -160,15 +163,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                         }
                 }
             }
-            fileBackedTasksManager.save();
         } catch (IOException e) {
-            throw new ManagerSaveException(e.getMessage());
+            throw new ManagerSaveException("File not found");
         }
         return fileBackedTasksManager;
     }
 
     private void save() {
-        try (FileWriter fileWriter = new FileWriter("resources/file.csv")) {
+        try (FileWriter fileWriter = new FileWriter(file)) {
             for (Task task : getTasks()) {
                 fileWriter.write(task.toCsvRow() + "\n");
             }
@@ -183,7 +185,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             fileWriter.write(historyToString(Managers.getDefaultHistory().getHistory()));
 
         } catch (IOException e) {
-            throw new ManagerSaveException(e.getMessage());
+            throw new ManagerSaveException("File not found");
         }
     }
 
@@ -213,6 +215,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 task.setDescription(split[DESCRIPTION_INDEX]);
                 task.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
                 task.setName(split[NAME_INDEX]);
+                task.setDuration(Integer.parseInt(split[DURATION_INDEX]));
+                task.setStartTime(LocalDateTime.parse(split[START_TIME_INDEX]));
                 break;
             case "Epic":
                 Epic epic = new Epic();
@@ -220,6 +224,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 epic.setDescription(split[DESCRIPTION_INDEX]);
                 epic.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
                 epic.setName(split[NAME_INDEX]);
+                epic.setDuration(Integer.parseInt(split[DURATION_INDEX]));
+                epic.setStartTime(LocalDateTime.parse(split[START_TIME_INDEX]));
                 task = epic;
                 break;
             case "Subtask":
@@ -228,6 +234,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 subtask.setDescription(split[DESCRIPTION_INDEX]);
                 subtask.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
                 subtask.setName(split[NAME_INDEX]);
+                subtask.setDuration(Integer.parseInt(split[DURATION_INDEX]));
+                subtask.setStartTime(LocalDateTime.parse(split[START_TIME_INDEX]));
                 subtask.setEpicId(Integer.parseInt(split[EPIC_ID_INDEX]));
                 task = subtask;
                 break;

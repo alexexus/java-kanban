@@ -5,10 +5,15 @@ import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
 import ru.yandex.practicum.tracker.model.TaskStatus;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -111,6 +116,7 @@ public class InMemoryTaskManager implements TaskManager {
         epics.put(epic.getId(), epic);
 
         updateEpicStatus(epic);
+        getEndTimeForEpic(epic);
     }
 
     @Override
@@ -158,6 +164,15 @@ public class InMemoryTaskManager implements TaskManager {
         return subtasksInEpic;
     }
 
+    @Override
+    public Set<Task> getPrioritizedTasks() {
+        Set<Task> taskList = new TreeSet<>(Comparator.comparing(Task::getStartTime));
+        taskList.addAll(tasks.values());
+        taskList.addAll(epics.values());
+        taskList.addAll(subtasks.values());
+        return taskList;
+    }
+
     private void updateEpicStatus(Epic epic) {
         if (epic.getSubtaskIds().isEmpty()) {
             epic.setStatus(TaskStatus.NEW);
@@ -184,5 +199,18 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
+    }
+
+    private void getEndTimeForEpic(Epic epic) {
+        int duration = 0;
+        LocalDateTime startTime = LocalDateTime.MAX;
+        for (Integer integer : epic.getSubtaskIds()) {
+            duration += subtasks.get(integer).getDuration();
+            if (subtasks.get(integer).getStartTime().isBefore(startTime)) {
+                startTime = subtasks.get(integer).getStartTime();
+            }
+        }
+        epic.setDuration(duration);
+        epic.setStartTime(startTime);
     }
 }

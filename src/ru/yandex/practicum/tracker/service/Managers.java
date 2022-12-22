@@ -1,16 +1,13 @@
 package ru.yandex.practicum.tracker.service;
 
+import java.io.File;
+
 public class Managers {
-
-    private static final TaskManager defaultTaskManager = new InMemoryTaskManager();
-    private static final HistoryManager defaultHistoryManager = new InMemoryHistoryManager();
-
     public static TaskManager getDefault() {
-        return defaultTaskManager;
+        return new FileBackedTasksManager(new File("resources/empty-file.csv"));
     }
 
     public static HistoryManager getDefaultHistory() {
-        return defaultHistoryManager;
+        return new InMemoryHistoryManager();
     }
-
 }

@@ -1,7 +1,7 @@
+package ru.yandex.practicum.tracker.service;
+
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tracker.model.Task;
-import ru.yandex.practicum.tracker.service.HistoryManager;
-import ru.yandex.practicum.tracker.service.InMemoryHistoryManager;
 
 import java.util.List;
 

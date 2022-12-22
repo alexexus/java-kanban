@@ -133,6 +133,22 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                     continue;
                 }
                 String[] split = str.split(",");
+                if (split.length < 2) {
+                    for (Integer taskId : historyFromString(str)) {
+                        fileBackedTasksManager.getEpicById(taskId);
+                        fileBackedTasksManager.getSubtaskById(taskId);
+                        fileBackedTasksManager.getTaskById(taskId);
+                    }
+                    break;
+                }
+                char[] chars = split[CLASS_INDEX].toCharArray();
+                if (Character.isDigit(chars[0])) {
+                    for (Integer taskId : historyFromString(str)) {
+                        fileBackedTasksManager.getEpicById(taskId);
+                        fileBackedTasksManager.getSubtaskById(taskId);
+                        fileBackedTasksManager.getTaskById(taskId);
+                    }
+                }
                 switch (split[CLASS_INDEX]) {
                     case "Task":
                         Task task = fromString(str);
@@ -155,12 +171,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                             fileBackedTasksManager.generatorId = subtask.getId();
                         }
                         break;
-                    default:
-                        for (Integer taskId : historyFromString(str)) {
-                            fileBackedTasksManager.getEpicById(taskId);
-                            fileBackedTasksManager.getSubtaskById(taskId);
-                            fileBackedTasksManager.getTaskById(taskId);
-                        }
                 }
             }
         } catch (IOException e) {
@@ -170,7 +180,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        try (FileWriter fileWriter = new FileWriter(file)) {
+        try (FileWriter fileWriter = new FileWriter("resources/savedDataFile.csv")) {
             for (Task task : getTasks()) {
                 fileWriter.write(task.toCsvRow() + "\n");
             }

@@ -3,7 +3,7 @@ package ru.yandex.practicum.tracker.model;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Task {
+public class Task implements Comparable<Task> {
 
     private String name;
     private TaskStatus status;
@@ -89,5 +89,19 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(name, status, id, description, startTime, duration);
+    }
+
+    @Override
+    public int compareTo(Task task) {
+        if (this.getStartTime() == LocalDateTime.MIN) {
+            if (task.getStartTime() == LocalDateTime.MIN) {
+                return 0;
+            }
+            return 1;
+        }
+        if (task.getStartTime() == LocalDateTime.MIN) {
+            return -1;
+        }
+        return this.getStartTime().compareTo(task.getStartTime());
     }
 }

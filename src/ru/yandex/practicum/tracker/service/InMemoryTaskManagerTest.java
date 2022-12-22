@@ -1,18 +1,18 @@
+package ru.yandex.practicum.tracker.service;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
 import ru.yandex.practicum.tracker.model.TaskStatus;
-import ru.yandex.practicum.tracker.service.InMemoryTaskManager;
-import ru.yandex.practicum.tracker.service.TaskManager;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryTaskManagerTest {
@@ -45,9 +45,12 @@ class InMemoryTaskManagerTest {
 
     @Test
     void deleteAllTasks_shouldDeleteAllTasks() {
-        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
-        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2);
-        Task task3 = task("name3", "description3", TaskStatus.DONE, 3);
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Task task3 = task("name3", "description3", TaskStatus.DONE, 3,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
 
         taskManager.createTask(task1);
         taskManager.createTask(task2);
@@ -70,16 +73,20 @@ class InMemoryTaskManagerTest {
 
         taskManager.deleteAllEpics();
 
-        assertTrue(taskManager.getEpics().isEmpty() && taskManager.getSubtasks().isEmpty());
+        assertTrue(taskManager.getEpics().isEmpty());
+        assertTrue(taskManager.getSubtasks().isEmpty());
     }
 
     @Test
     void deleteAllSubtasks_shouldDeleteAllSubtasks() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.NEW, 2, new ArrayList<>());
-        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
-        Subtask subtask2 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 1);
-        Subtask subtask3 = subtask("name5", "description5", TaskStatus.DONE, 5, 2);
+        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Subtask subtask2 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 1,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Subtask subtask3 = subtask("name5", "description5", TaskStatus.DONE, 5, 2,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
@@ -97,7 +104,8 @@ class InMemoryTaskManagerTest {
 
     @Test
     void getTaskById_shouldReturnTaskById() {
-        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
         taskManager.createTask(task1);
 
         assertEquals(task1, taskManager.getTaskById(1));
@@ -115,7 +123,8 @@ class InMemoryTaskManagerTest {
     void getSubtaskById_shouldReturnSubtaskById() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         taskManager.createEpic(epic1);
-        Subtask subtask1 = subtask("name2", "description2", TaskStatus.NEW, 2, 1);
+        Subtask subtask1 = subtask("name2", "description2", TaskStatus.NEW, 2, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
         taskManager.createSubtask(subtask1);
 
         assertEquals(subtask1, taskManager.getSubtaskById(2));
@@ -123,9 +132,12 @@ class InMemoryTaskManagerTest {
 
     @Test
     void createTask_shouldCreateTask() {
-        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
-        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2);
-        Task task3 = task("name3", "description3", TaskStatus.DONE, 3);
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Task task3 = task("name3", "description3", TaskStatus.DONE, 3,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.createTask(task3);
@@ -149,9 +161,12 @@ class InMemoryTaskManagerTest {
     void createSubtask_shouldCreateSubtask() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.NEW, 2, new ArrayList<>());
-        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
-        Subtask subtask2 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 1);
-        Subtask subtask3 = subtask("name5", "description5", TaskStatus.DONE, 5, 2);
+        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Subtask subtask2 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 1,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Subtask subtask3 = subtask("name5", "description5", TaskStatus.DONE, 5, 2,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
@@ -166,14 +181,18 @@ class InMemoryTaskManagerTest {
 
     @Test
     void updateTask_shouldUpdateTask() {
-        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
-        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2);
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
 
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
-        Task task3 = task("name1(update)", "description1(update)", TaskStatus.IN_PROGRESS, 1);
-        Task task4 = task("name2(update)", "description2(update)", TaskStatus.NEW, 2);
+        Task task3 = task("name1(update)", "description1(update)", TaskStatus.IN_PROGRESS, 1,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
+        Task task4 = task("name2(update)", "description2(update)", TaskStatus.NEW, 2,
+                0, LocalDateTime.of(2003, 1, 1, 1, 1));
 
         taskManager.updateTask(task3);
         taskManager.updateTask(task4);
@@ -202,16 +221,20 @@ class InMemoryTaskManagerTest {
     void updateSubtask_shouldUpdateSubtask() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.NEW, 2, new ArrayList<>());
-        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
-        Subtask subtask2 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 2);
+        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Subtask subtask2 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 2,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
 
-        Subtask subtask3 = subtask("name3(update)", "description3(update)", TaskStatus.IN_PROGRESS, 3, 2);
-        Subtask subtask4 = subtask("name4(update)", "description4(update)", TaskStatus.DONE, 4, 1);
+        Subtask subtask3 = subtask("name3(update)", "description3(update)", TaskStatus.IN_PROGRESS, 3, 2,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
+        Subtask subtask4 = subtask("name4(update)", "description4(update)", TaskStatus.DONE, 4, 1,
+                0, LocalDateTime.of(2003, 1, 1, 1, 1));
 
         taskManager.updateSubtask(subtask3);
         taskManager.updateSubtask(subtask4);
@@ -221,8 +244,10 @@ class InMemoryTaskManagerTest {
 
     @Test
     void removeTaskById_shouldRemoveTaskById() {
-        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
-        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2);
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Task task2 = task("name2", "description2", TaskStatus.IN_PROGRESS, 2,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
 
         taskManager.createTask(task1);
         taskManager.createTask(task2);
@@ -236,7 +261,8 @@ class InMemoryTaskManagerTest {
     void removeEpicById_shouldRemoveEpicById() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.IN_PROGRESS, 2, new ArrayList<>());
-        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
+        Subtask subtask1 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
@@ -252,11 +278,16 @@ class InMemoryTaskManagerTest {
     void removeSubtaskById_shouldRemoveSubtaskById() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.NEW, 2, new ArrayList<>());
-        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
-        Subtask subtask4 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 2);
-        Subtask subtask5 = subtask("name5", "description5", TaskStatus.DONE, 5, 1);
-        Subtask subtask6 = subtask("name6", "description6", TaskStatus.NEW, 6, 2);
-        Subtask subtask7 = subtask("name7", "description7", TaskStatus.IN_PROGRESS, 7, 1);
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Subtask subtask4 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 2,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Subtask subtask5 = subtask("name5", "description5", TaskStatus.DONE, 5, 1,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
+        Subtask subtask6 = subtask("name6", "description6", TaskStatus.NEW, 6, 2,
+                0, LocalDateTime.of(2003, 1, 1, 1, 1));
+        Subtask subtask7 = subtask("name7", "description7", TaskStatus.IN_PROGRESS, 7, 1,
+                0, LocalDateTime.of(2004, 1, 1, 1, 1));
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
@@ -279,11 +310,16 @@ class InMemoryTaskManagerTest {
     void getSubtasksByEpicId_shouldGetSubtasksByEpicId() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
         Epic epic2 = epic("name2", "description2", TaskStatus.NEW, 2, new ArrayList<>());
-        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
-        Subtask subtask4 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 2);
-        Subtask subtask5 = subtask("name5", "description5", TaskStatus.DONE, 5, 1);
-        Subtask subtask6 = subtask("name6", "description6", TaskStatus.NEW, 6, 2);
-        Subtask subtask7 = subtask("name7", "description7", TaskStatus.IN_PROGRESS, 7, 1);
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Subtask subtask4 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 2,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Subtask subtask5 = subtask("name5", "description5", TaskStatus.DONE, 5, 1,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
+        Subtask subtask6 = subtask("name6", "description6", TaskStatus.NEW, 6, 2,
+                0, LocalDateTime.of(2003, 1, 1, 1, 1));
+        Subtask subtask7 = subtask("name7", "description7", TaskStatus.IN_PROGRESS, 7, 1,
+                0, LocalDateTime.of(2004, 1, 1, 1, 1));
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
@@ -299,12 +335,18 @@ class InMemoryTaskManagerTest {
     @Test
     void updateEpicStatus_shouldUpdateEpicStatus() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
-        Subtask subtask2 = subtask("name2", "description2", TaskStatus.NEW, 2, 1);
-        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
-        Subtask subtask4 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 1);
-        Subtask subtask5 = subtask("name5", "description5", TaskStatus.IN_PROGRESS, 5, 1);
-        Subtask subtask6 = subtask("name6", "description6", TaskStatus.DONE, 6, 1);
-        Subtask subtask7 = subtask("name7", "description7", TaskStatus.DONE, 7, 1);
+        Subtask subtask2 = subtask("name2", "description2", TaskStatus.NEW, 2, 1,
+                0, LocalDateTime.of(2000, 1, 1, 1, 1));
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Subtask subtask4 = subtask("name4", "description4", TaskStatus.IN_PROGRESS, 4, 1,
+                0, LocalDateTime.of(2002, 1, 1, 1, 1));
+        Subtask subtask5 = subtask("name5", "description5", TaskStatus.IN_PROGRESS, 5, 1,
+                0, LocalDateTime.of(2003, 1, 1, 1, 1));
+        Subtask subtask6 = subtask("name6", "description6", TaskStatus.DONE, 6, 1,
+                0, LocalDateTime.of(2004, 1, 1, 1, 1));
+        Subtask subtask7 = subtask("name7", "description7", TaskStatus.DONE, 7, 1,
+                0, LocalDateTime.of(2005, 1, 1, 1, 1));
 
         taskManager.createEpic(epic1);
         taskManager.createSubtask(subtask2);
@@ -350,53 +392,69 @@ class InMemoryTaskManagerTest {
     @Test
     void getEndTime_shouldReturnEndTimeOfEpic() {
         Epic epic1 = epic("name1", "description1", TaskStatus.NEW, 1, new ArrayList<>());
-        Subtask subtask2 = subtask("name2", "description2", TaskStatus.NEW, 2, 1);
-        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1);
-        subtask2.setDuration(20);
-        subtask3.setDuration(30);
-        subtask2.setStartTime(LocalDateTime.of(2000, 1, 4, 0, 0));
-        subtask3.setStartTime(LocalDateTime.of(2000, 1, 2, 0, 0));
+        Subtask subtask2 = subtask("name2", "description2", TaskStatus.NEW, 2, 1,
+                20, LocalDateTime.of(2000, 1, 4, 0, 0));
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 1,
+                30, LocalDateTime.of(2000, 1, 2, 0, 0));
 
         taskManager.createEpic(epic1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
 
-        assertEquals(LocalDateTime.of(2000, 1, 2, 0, 50), epic1.getEndTime());
+        assertEquals(LocalDateTime.of(2000, 1, 4, 0, 50), epic1.getEndTime());
     }
 
     @Test
     void getEndTime_shouldReturnEndTimeOfTask() {
-        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
-        task1.setDuration(20);
-        task1.setStartTime(LocalDateTime.of(2001, 1, 1, 0, 0));
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                20, LocalDateTime.of(2001, 1, 1, 0, 0));
         assertEquals(LocalDateTime.of(2001, 1, 1, 0, 20), task1.getEndTime());
     }
 
-    /*
-    Почему-то не хочет сортировать в правильном порядке...
-     */
     @Test
     void getPrioritizedTasks_shouldReturnSortedTasks() {
-        Task task1 = task("name1", "description1", TaskStatus.NEW, 1);
-        Epic epic2 = epic("name2", "description2", TaskStatus.NEW, 2, new ArrayList<>());
-        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 2);
-        task1.setStartTime(LocalDateTime.of(2001, 1, 1, 0, 0));
-        epic2.setStartTime(LocalDateTime.of(2002, 1, 1, 0, 0));
-        subtask3.setStartTime(LocalDateTime.of(2003, 1, 1, 0, 0));
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                0, LocalDateTime.of(2001, 1, 1, 1, 1));
+        Task task2 = task("name2", "description2", TaskStatus.NEW, 2,
+                0, LocalDateTime.MIN);
+        Subtask subtask3 = subtask("name3", "description3", TaskStatus.NEW, 3, 5,
+                0, LocalDateTime.of(2003, 1, 1, 1, 1));
+        Task task4 = task("name4", "description4", TaskStatus.NEW, 4,
+                0, LocalDateTime.of(2004, 1, 1, 1, 1));
+        Epic epic5 = epic("name5", "description5", TaskStatus.NEW, 5, new ArrayList<>());
 
         taskManager.updateTask(task1);
-        taskManager.updateEpic(epic2);
+        taskManager.updateTask(task2);
+        taskManager.updateEpic(epic5);
         taskManager.updateSubtask(subtask3);
+        taskManager.updateTask(task4);
 
-        assertEquals(List.of(task1, epic2, subtask3), new ArrayList<>(taskManager.getPrioritizedTasks()));
+        assertEquals(List.of(task1, subtask3, task4, task2), new ArrayList<>(taskManager.getPrioritizedTasks()));
     }
 
-    protected static Task task(String name, String description, TaskStatus status, int id) {
+    @Test
+    void checkIntersection_shouldThrowIntersectionException() {
+        final IntersectionException exception = assertThrows(
+                IntersectionException.class,
+                () -> {
+                    Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                            20, LocalDateTime.of(2000, 1, 1, 1, 1));
+                    Task task2 = task("name2", "description2", TaskStatus.NEW, 2,
+                            0, LocalDateTime.of(2000, 1, 1, 1, 20));
+                    taskManager.createTask(task1);
+                    taskManager.createTask(task2);
+                });
+        assertEquals("Task overlaps with another tasks", exception.getMessage());
+    }
+
+    protected static Task task(String name, String description, TaskStatus status, int id, int duration, LocalDateTime localDateTime) {
         Task task = new Task();
         task.setName(name);
         task.setDescription(description);
         task.setStatus(status);
         task.setId(id);
+        task.setStartTime(localDateTime);
+        task.setDuration(duration);
         return task;
     }
 
@@ -409,13 +467,15 @@ class InMemoryTaskManagerTest {
         return epic;
     }
 
-    protected static Subtask subtask(String name, String description, TaskStatus status, int id, int epicId) {
+    protected static Subtask subtask(String name, String description, TaskStatus status, int id, int epicId, int duration, LocalDateTime localDateTime) {
         Subtask subtask = new Subtask();
         subtask.setName(name);
         subtask.setDescription(description);
         subtask.setStatus(status);
         subtask.setId(id);
         subtask.setEpicId(epicId);
+        subtask.setDuration(duration);
+        subtask.setStartTime(localDateTime);
         return subtask;
     }
 }

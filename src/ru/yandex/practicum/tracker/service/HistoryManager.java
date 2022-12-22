@@ -12,4 +12,6 @@ public interface HistoryManager {
 
     List<Integer> getHistory();
 
+    void clearNodes();
+
 }

@@ -10,9 +10,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
@@ -27,7 +29,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final File file;
 
-    public FileBackedTasksManager(File file) {
+    protected FileBackedTasksManager(File file) {
         this.file = file;
     }
 
@@ -180,7 +182,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        try (FileWriter fileWriter = new FileWriter("resources/savedDataFile.csv")) {
+        try (FileWriter fileWriter = new FileWriter(file)) {
             for (Task task : getTasks()) {
                 fileWriter.write(task.toCsvRow() + "\n");
             }
@@ -192,7 +194,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             }
 
             fileWriter.write("\n");
-            fileWriter.write(historyToString(Managers.getDefaultHistory().getHistory()));
+            fileWriter.write(historyToString(historyManager.getHistory()));
 
         } catch (IOException e) {
             throw new ManagerSaveException("File not found");
@@ -200,20 +202,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private static String historyToString(List<Integer> taskIds) {
-        StringBuilder stringBuilder = new StringBuilder();
-        for (Integer taskId : taskIds) {
-            stringBuilder.append(taskId).append(",");
-        }
-        return stringBuilder.toString();
+        return taskIds.stream()
+                .map(Object::toString)
+                .collect(Collectors.joining(","));
     }
 
     private static List<Integer> historyFromString(String value) {
-        List<Integer> taskIds = new ArrayList<>();
-        String[] ids = value.split(",");
-        for (String id : ids) {
-            taskIds.add(Integer.valueOf(id));
-        }
-        return taskIds;
+        return Stream.of(value.split(","))
+                .map(Integer::valueOf)
+                .collect(Collectors.toList());
     }
 
     private static Task fromString(String value) {
@@ -225,7 +222,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 task.setDescription(split[DESCRIPTION_INDEX]);
                 task.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
                 task.setName(split[NAME_INDEX]);
-                task.setDuration(Integer.parseInt(split[DURATION_INDEX]));
+                task.setDuration(Duration.parse(split[DURATION_INDEX]));
                 task.setStartTime(LocalDateTime.parse(split[START_TIME_INDEX]));
                 break;
             case "Epic":
@@ -234,7 +231,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 epic.setDescription(split[DESCRIPTION_INDEX]);
                 epic.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
                 epic.setName(split[NAME_INDEX]);
-                epic.setDuration(Integer.parseInt(split[DURATION_INDEX]));
+                epic.setDuration(Duration.parse(split[DURATION_INDEX]));
                 epic.setStartTime(LocalDateTime.parse(split[START_TIME_INDEX]));
                 task = epic;
                 break;
@@ -244,7 +241,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 subtask.setDescription(split[DESCRIPTION_INDEX]);
                 subtask.setStatus(TaskStatus.valueOf(split[STATUS_INDEX]));
                 subtask.setName(split[NAME_INDEX]);
-                subtask.setDuration(Integer.parseInt(split[DURATION_INDEX]));
+                subtask.setDuration(Duration.parse(split[DURATION_INDEX]));
                 subtask.setStartTime(LocalDateTime.parse(split[START_TIME_INDEX]));
                 subtask.setEpicId(Integer.parseInt(split[EPIC_ID_INDEX]));
                 task = subtask;

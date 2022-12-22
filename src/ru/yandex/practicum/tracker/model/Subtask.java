@@ -14,7 +14,6 @@ public class Subtask extends Task {
         this.epicId = epicId;
     }
 
-
     @Override
     public String toCsvRow() {
         return super.toCsvRow() + "," + epicId;

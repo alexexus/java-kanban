@@ -1,5 +1,6 @@
 package ru.yandex.practicum.tracker.model;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -9,18 +10,21 @@ public class Task implements Comparable<Task> {
     private TaskStatus status;
     private int id;
     private String description;
-    private int duration = 0;
-    private LocalDateTime startTime = LocalDateTime.MIN;
+    private Duration duration;
+    private LocalDateTime startTime;
 
     public LocalDateTime getEndTime() {
-        return startTime.plusMinutes(duration);
+        if (startTime == null || duration == null) {
+            return null;
+        }
+        return startTime.plus(duration);
     }
 
-    public int getDuration() {
+    public Duration getDuration() {
         return duration;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Duration duration) {
         this.duration = duration;
     }
 
@@ -65,8 +69,8 @@ public class Task implements Comparable<Task> {
     }
 
     public String toCsvRow() {
-        return String.format("%d,%s,%s,%s,%s,%d,%s",
-                id, getClass().getSimpleName(), name, status, description, duration, startTime.toString());
+        return String.format("%d,%s,%s,%s,%s,%s,%s",
+                id, getClass().getSimpleName(), name, status, description, duration, startTime);
     }
 
     @Override
@@ -93,13 +97,13 @@ public class Task implements Comparable<Task> {
 
     @Override
     public int compareTo(Task task) {
-        if (this.getStartTime() == LocalDateTime.MIN) {
-            if (task.getStartTime() == LocalDateTime.MIN) {
+        if (this.getStartTime() == null) {
+            if (task.getStartTime() == null) {
                 return 0;
             }
             return 1;
         }
-        if (task.getStartTime() == LocalDateTime.MIN) {
+        if (task.getStartTime() == null) {
             return -1;
         }
         return this.getStartTime().compareTo(task.getStartTime());

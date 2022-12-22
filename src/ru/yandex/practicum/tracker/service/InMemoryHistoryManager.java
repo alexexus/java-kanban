@@ -16,6 +16,11 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node tail;
 
     @Override
+    public void clearNodes() {
+        nodes.clear();
+    }
+
+    @Override
     public void add(Task task) {
         if (task != null) {
             removeNode(task.getId());

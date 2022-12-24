@@ -446,6 +446,70 @@ class InMemoryTaskManagerTest {
                     taskManager.createTask(task2);
                 });
         assertEquals("Task overlaps with another tasks", exception.getMessage());
+
+        final IntersectionException exception1 = assertThrows(
+                IntersectionException.class,
+                () -> {
+                    Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                            Duration.ofMinutes(60), LocalDateTime.of(2000, 1, 1, 1, 1));
+                    Task task2 = task("name2", "description2", TaskStatus.NEW, 2,
+                            Duration.ofMinutes(0), LocalDateTime.of(2000, 1, 1, 2, 1));
+                    taskManager.createTask(task1);
+                    taskManager.createTask(task2);
+                });
+        assertEquals("Task overlaps with another tasks", exception1.getMessage());
+
+        final IntersectionException exception2 = assertThrows(
+                IntersectionException.class,
+                () -> {
+                    Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                            Duration.ofMinutes(1440), LocalDateTime.of(2000, 1, 1, 1, 1));
+                    Task task2 = task("name2", "description2", TaskStatus.NEW, 2,
+                            Duration.ofMinutes(0), LocalDateTime.of(2000, 1, 2, 1, 1));
+                    taskManager.createTask(task1);
+                    taskManager.createTask(task2);
+                });
+        assertEquals("Task overlaps with another tasks", exception2.getMessage());
+
+        final IntersectionException exception3 = assertThrows(
+                IntersectionException.class,
+                () -> {
+                    Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                            Duration.ofMinutes(43800), LocalDateTime.of(2000, 1, 1, 1, 1));
+                    Task task2 = task("name2", "description2", TaskStatus.NEW, 2,
+                            Duration.ofMinutes(0), LocalDateTime.of(2000, 2, 1, 1, 1));
+                    taskManager.createTask(task1);
+                    taskManager.createTask(task2);
+                });
+        assertEquals("Task overlaps with another tasks", exception3.getMessage());
+
+        final IntersectionException exception4 = assertThrows(
+                IntersectionException.class,
+                () -> {
+                    Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                            Duration.ofMinutes(525600), LocalDateTime.of(2000, 1, 1, 1, 1));
+                    Task task2 = task("name2", "description2", TaskStatus.NEW, 2,
+                            Duration.ofMinutes(0), LocalDateTime.of(2001, 1, 1, 1, 1));
+                    taskManager.createTask(task1);
+                    taskManager.createTask(task2);
+                });
+        assertEquals("Task overlaps with another tasks", exception4.getMessage());
+    }
+
+    @Test
+    void checkIntersection_shouldCheckIntersection() {
+        Task task1 = task("name1", "description1", TaskStatus.NEW, 1,
+                Duration.ofMinutes(20), LocalDateTime.of(2000, 1, 1, 1, 1));
+        Task task2 = task("name2", "description2", TaskStatus.NEW, 2,
+                Duration.ofMinutes(0), LocalDateTime.of(2000, 1, 1, 1, 21));
+        Task task3 = task("name3", "description3", TaskStatus.NEW, 2,
+                null, null);
+        Task task4 = task("name2", "description2", TaskStatus.NEW, 2,
+                Duration.ofMinutes(1), LocalDateTime.of(1999, 12, 31, 23, 59));
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        taskManager.createTask(task4);
     }
 
     protected static Task task(String name, String description, TaskStatus status, int id, Duration duration, LocalDateTime localDateTime) {

@@ -26,10 +26,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    private int generateId() {
-        return ++generatorId;
-    }
-
     @Override
     public List<Task> getTasks() {
         return new ArrayList<>(tasks.values());
@@ -171,6 +167,10 @@ public class InMemoryTaskManager implements TaskManager {
         return Stream.of(tasks.values(), subtasks.values())
                 .flatMap(Collection::stream)
                 .collect(Collectors.toCollection(TreeSet::new));
+    }
+
+    private int generateId() {
+        return ++generatorId;
     }
 
     private void updateEpicStatus(Epic epic) {

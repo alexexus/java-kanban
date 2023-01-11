@@ -34,7 +34,7 @@ class FileBackedTasksManagerTest extends InMemoryTaskManagerTest {
 
     @Test
     void loadFromFile_shouldCreateManagerFromFile() {
-        FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("resources/file-for-testload-from-file.csv"));
+        FileBackedTasksManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(new File("resources/file-for-test-load-from-file.csv"));
 
         Task task1 = task("Задача #1", "Описание задачи #1", TaskStatus.NEW, 1,
                 Duration.ofMinutes(0), LocalDateTime.of(2000, 1, 1, 1, 1));

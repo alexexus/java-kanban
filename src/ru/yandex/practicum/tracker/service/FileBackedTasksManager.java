@@ -27,7 +27,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private static final int START_TIME_INDEX = 6;
     private static final int EPIC_ID_INDEX = 7;
 
-    private final File file;
+    private File file;
+
+    public FileBackedTasksManager() {
+
+    }
 
     protected FileBackedTasksManager(File file) {
         this.file = file;
@@ -181,7 +185,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    private void save() {
+    public void save() {
         try (FileWriter fileWriter = new FileWriter(file)) {
             for (Task task : getTasks()) {
                 fileWriter.write(task.toCsvRow() + "\n");

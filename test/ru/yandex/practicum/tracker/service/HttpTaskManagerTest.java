@@ -24,11 +24,6 @@ public class HttpTaskManagerTest extends FileBackedTasksManagerTest {
         new KVServer().start();
     }
 
-    @Override
-    protected TaskManager createTaskManager() {
-        return new HttpTaskManager(URI.create("http://localhost:8080/register/"));
-    }
-
     @Test
     void loadFromServer_shouldLoadDataFromServer() throws IOException, InterruptedException {
         HttpTaskManager httpTaskManager = new HttpTaskManager(URI.create("http://localhost:8080/register/"));

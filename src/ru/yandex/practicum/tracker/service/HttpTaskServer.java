@@ -9,6 +9,7 @@ import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
@@ -24,7 +25,7 @@ public class HttpTaskServer {
     protected TaskManager taskManager;
 
     public HttpTaskServer() throws IOException {
-        this(Managers.getDefault());
+        this(new FileBackedTasksManager(new File("resources/empty-file.csv")));
     }
 
     public HttpTaskServer(TaskManager taskManager) throws IOException {

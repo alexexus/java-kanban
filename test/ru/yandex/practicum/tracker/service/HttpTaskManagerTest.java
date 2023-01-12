@@ -1,5 +1,6 @@
 package ru.yandex.practicum.tracker.service;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tracker.model.Epic;

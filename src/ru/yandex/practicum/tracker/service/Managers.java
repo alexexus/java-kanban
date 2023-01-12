@@ -1,10 +1,10 @@
 package ru.yandex.practicum.tracker.service;
 
-import java.io.File;
+import java.net.URI;
 
 public class Managers {
     public static TaskManager getDefault() {
-        return new FileBackedTasksManager(new File("resources/empty-file.csv"));
+        return new HttpTaskManager(URI.create("http://localhost:8080/register"));
     }
 
     public static HistoryManager getDefaultHistory() {

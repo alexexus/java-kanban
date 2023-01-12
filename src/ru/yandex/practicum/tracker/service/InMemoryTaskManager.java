@@ -163,6 +163,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public List<Integer> getHistory() {
+        return historyManager.getHistory();
+    }
+
+    @Override
     public Set<Task> getPrioritizedTasks() {
         return Stream.of(tasks.values(), subtasks.values())
                 .flatMap(Collection::stream)

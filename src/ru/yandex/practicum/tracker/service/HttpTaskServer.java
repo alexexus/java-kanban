@@ -8,23 +8,20 @@ import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.tracker.model.Epic;
 import ru.yandex.practicum.tracker.model.Subtask;
 import ru.yandex.practicum.tracker.model.Task;
-import ru.yandex.practicum.tracker.model.TaskStatus;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class HttpTaskServer {
 
-    public static final int PORT = 8080;
-    private HttpServer httpServer;
-    private Gson gson;
-    private TaskManager taskManager;
+    public static final int PORT = 8081;
+    protected HttpServer httpServer;
+    protected Gson gson;
+    protected TaskManager taskManager;
 
     public HttpTaskServer() throws IOException {
         this(Managers.getDefault());
@@ -35,18 +32,6 @@ public class HttpTaskServer {
         httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         httpServer.createContext("/tasks", this::handleTasks);
         gson = new GsonBuilder().create();
-    }
-
-    public static void main(String[] args) throws IOException {
-        HttpTaskServer httpTaskServer = new HttpTaskServer();
-        httpTaskServer.start();
-        Task task1 = new Task();
-        task1.setName("name");
-        task1.setDescription("description");
-        task1.setStatus(TaskStatus.NEW);
-        task1.setStartTime(LocalDateTime.of(2000, 1, 1, 0, 0));
-        task1.setDuration(Duration.ofMinutes(0));
-        httpTaskServer.taskManager.createTask(task1);
     }
 
     private void handleTasks(HttpExchange httpExchange) {
@@ -69,7 +54,7 @@ public class HttpTaskServer {
                     }
 
                     if (Pattern.matches("^/tasks/history/$", path)) {
-                        String response = gson.toJson(Managers.getDefaultHistory());
+                        String response = gson.toJson(taskManager.getHistory());
                         sendText(httpExchange, response);
                         break;
                     }

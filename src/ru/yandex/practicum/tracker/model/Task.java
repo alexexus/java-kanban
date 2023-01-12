@@ -87,7 +87,7 @@ public class Task implements Comparable<Task> {
                 && status == task.status
                 && Objects.equals(description, task.description)
                 && startTime.isEqual(task.startTime)
-                && duration == task.duration;
+                && duration.equals(task.duration);
     }
 
     @Override

@@ -30,7 +30,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private File file;
 
     public FileBackedTasksManager() {
-
     }
 
     protected FileBackedTasksManager(File file) {
@@ -185,7 +184,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    public void save() {
+    protected void save() {
         try (FileWriter fileWriter = new FileWriter(file)) {
             for (Task task : getTasks()) {
                 fileWriter.write(task.toCsvRow() + "\n");

@@ -24,14 +24,12 @@ public class HttpTaskServer {
     protected Gson gson;
     protected TaskManager taskManager;
 
-    public HttpTaskServer() throws IOException {
+    public HttpTaskServer() {
         this(new FileBackedTasksManager(new File("resources/empty-file.csv")));
     }
 
-    public HttpTaskServer(TaskManager taskManager) throws IOException {
+    public HttpTaskServer(TaskManager taskManager) {
         this.taskManager = taskManager;
-        httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        httpServer.createContext("/tasks", this::handleTasks);
         gson = new GsonBuilder().create();
     }
 
@@ -48,7 +46,7 @@ public class HttpTaskServer {
                             String response = gson.toJson(taskManager.getSubtasksByEpicId(id));
                             sendText(httpExchange, response);
                         } else {
-                            System.out.println("Получен неверный id задачи");
+                            System.out.println("Invalid task id received");
                             httpExchange.sendResponseHeaders(405, 0);
                         }
                         break;
@@ -89,7 +87,7 @@ public class HttpTaskServer {
                             String response = gson.toJson(taskManager.getTaskById(id));
                             sendText(httpExchange, response);
                         } else {
-                            System.out.println("Получен неверный id задачи");
+                            System.out.println("Invalid task id received");
                             httpExchange.sendResponseHeaders(405, 0);
                         }
                         break;
@@ -101,7 +99,7 @@ public class HttpTaskServer {
                             String response = gson.toJson(taskManager.getEpicById(id));
                             sendText(httpExchange, response);
                         } else {
-                            System.out.println("Получен неверный id задачи");
+                            System.out.println("Invalid task id received");
                             httpExchange.sendResponseHeaders(405, 0);
                         }
                         break;
@@ -113,7 +111,7 @@ public class HttpTaskServer {
                             String response = gson.toJson(taskManager.getSubtaskById(id));
                             sendText(httpExchange, response);
                         } else {
-                            System.out.println("Получен неверный id задачи");
+                            System.out.println("Invalid task id received");
                             httpExchange.sendResponseHeaders(405, 0);
                         }
                         break;
@@ -129,22 +127,22 @@ public class HttpTaskServer {
                                     || !(body.contains("description"))
                                     || !(body.contains("duration"))
                                     || !(body.contains("startTime"))) {
-                                System.out.println("Поля не могут быть пустыми");
+                                System.out.println("Fields cannot be empty");
                                 httpExchange.sendResponseHeaders(400, 0);
                                 break;
                             }
                             Task task = gson.fromJson(body, Task.class);
                             if (body.contains("id")) {
                                 taskManager.updateTask(task);
-                                System.out.println("Задача обновлена");
+                                System.out.println("Task updated");
                                 httpExchange.sendResponseHeaders(200, 0);
                             } else {
                                 taskManager.createTask(task);
-                                System.out.println("Задача добавлена");
+                                System.out.println("Task added");
                                 httpExchange.sendResponseHeaders(200, 0);
                             }
                         } catch (JsonSyntaxException e) {
-                            System.out.println("Получен некорректный JSON");
+                            System.out.println("Incorrect JSON received");
                             httpExchange.sendResponseHeaders(400, 0);
                         }
                         break;
@@ -157,22 +155,22 @@ public class HttpTaskServer {
                                     || !(body.contains("status"))
                                     || !(body.contains("description"))
                                     || !(body.contains("subtaskIds"))) {
-                                System.out.println("Поля не могут быть пустыми");
+                                System.out.println("Fields cannot be empty");
                                 httpExchange.sendResponseHeaders(400, 0);
                                 break;
                             }
                             Epic epic = gson.fromJson(body, Epic.class);
                             if (body.contains("id")) {
                                 taskManager.updateEpic(epic);
-                                System.out.println("Эпик обновлен");
+                                System.out.println("Epic updated");
                                 httpExchange.sendResponseHeaders(200, 0);
                             } else {
                                 taskManager.createEpic(epic);
-                                System.out.println("Эпик добавлен");
+                                System.out.println("Epic added");
                                 httpExchange.sendResponseHeaders(200, 0);
                             }
                         } catch (JsonSyntaxException e) {
-                            System.out.println("Получен некорректный JSON");
+                            System.out.println("Incorrect JSON received");
                             httpExchange.sendResponseHeaders(400, 0);
                         }
                         break;
@@ -187,22 +185,22 @@ public class HttpTaskServer {
                                     || !(body.contains("duration"))
                                     || !(body.contains("startTime"))
                                     || !(body.contains("epicId"))) {
-                                System.out.println("Поля не могут быть пустыми");
+                                System.out.println("Fields cannot be empty");
                                 httpExchange.sendResponseHeaders(400, 0);
                                 break;
                             }
                             Subtask subtask = gson.fromJson(body, Subtask.class);
                             if (body.contains("id")) {
                                 taskManager.updateSubtask(subtask);
-                                System.out.println("Подзадача обновлена");
+                                System.out.println("Subtask updated");
                                 httpExchange.sendResponseHeaders(200, 0);
                             } else {
                                 taskManager.createSubtask(subtask);
-                                System.out.println("Подзадача добавлена");
+                                System.out.println("Subtask added");
                                 httpExchange.sendResponseHeaders(200, 0);
                             }
                         } catch (JsonSyntaxException e) {
-                            System.out.println("Получен некорректный JSON");
+                            System.out.println("Incorrect JSON received");
                             httpExchange.sendResponseHeaders(400, 0);
                         }
                         break;
@@ -211,19 +209,19 @@ public class HttpTaskServer {
                 case "DELETE":
                     if (Pattern.matches("^/tasks/task/$", path)) {
                         taskManager.deleteAllTasks();
-                        System.out.println("Удалены все задачи");
+                        System.out.println("Removed all tasks");
                         httpExchange.sendResponseHeaders(200, 0);
                         break;
                     }
                     if (Pattern.matches("^/tasks/epic/$", path)) {
                         taskManager.deleteAllEpics();
-                        System.out.println("Удалены все эпики");
+                        System.out.println("Removed all epics");
                         httpExchange.sendResponseHeaders(200, 0);
                         break;
                     }
                     if (Pattern.matches("^/tasks/subtask/$", path)) {
                         taskManager.deleteAllSubtasks();
-                        System.out.println("Удалены все подзадачи");
+                        System.out.println("Removed all subtasks");
                         httpExchange.sendResponseHeaders(200, 0);
                         break;
                     }
@@ -233,10 +231,10 @@ public class HttpTaskServer {
                         int id = parsePathId(pathId);
                         if (id != -1) {
                             taskManager.removeTaskById(id);
-                            System.out.println("Удалили задачу с id = " + id);
+                            System.out.println("Deleted task with id = " + id);
                             httpExchange.sendResponseHeaders(200, 0);
                         } else {
-                            System.out.println("Получен неверный id задачи");
+                            System.out.println("Invalid task id received");
                             httpExchange.sendResponseHeaders(405, 0);
                         }
                         break;
@@ -246,10 +244,10 @@ public class HttpTaskServer {
                         int id = parsePathId(pathId);
                         if (id != -1) {
                             taskManager.removeEpicById(id);
-                            System.out.println("Удалили эпик с id = " + id);
+                            System.out.println("Deleted epic with id = " + id);
                             httpExchange.sendResponseHeaders(200, 0);
                         } else {
-                            System.out.println("Получен неверный id задачи");
+                            System.out.println("Invalid task id received");
                             httpExchange.sendResponseHeaders(405, 0);
                         }
                         break;
@@ -259,17 +257,17 @@ public class HttpTaskServer {
                         int id = parsePathId(pathId);
                         if (id != -1) {
                             taskManager.removeSubtaskById(id);
-                            System.out.println("Удалили подзадачу с id = " + id);
+                            System.out.println("Deleted subtask with id = " + id);
                             httpExchange.sendResponseHeaders(200, 0);
                         } else {
-                            System.out.println("Получен неверный id задачи");
+                            System.out.println("Invalid task id received");
                             httpExchange.sendResponseHeaders(405, 0);
                         }
                         break;
                     }
                     break;
                 default:
-                    System.out.println("Указан необрабатываемый запрос");
+                    System.out.println("Unprocessed request specified");
                     httpExchange.sendResponseHeaders(405, 0);
                     break;
             }
@@ -288,15 +286,16 @@ public class HttpTaskServer {
         }
     }
 
-    public void start() {
-        System.out.println("Запускаем сервер на порту " + PORT);
-        System.out.println("Открой в браузере http://localhost:" + PORT + "/");
+    public void start() throws IOException {
+        System.out.println("Starting the server on a port " + PORT);
+        httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
+        httpServer.createContext("/tasks", this::handleTasks);
         httpServer.start();
     }
 
     public void stop() {
         httpServer.stop(0);
-        System.out.println("Остановили сервер на порту " + PORT);
+        System.out.println("Stopped the server on a port " + PORT);
     }
 
     protected String readText(HttpExchange h) throws IOException {
